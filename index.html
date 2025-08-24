@@ -29,7 +29,7 @@
     
     /* Reset e estilos base */
     *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
-    html,body{height:100%; background:var(--bg); color:var(--text); font-size:15px;}
+    html,body{height:100%; background:var(--bg); color:var(--text); font-size:15px; overflow-x: hidden;}
     body{
       margin:0; font-family:var(--ui-font); 
       background:
@@ -47,16 +47,17 @@
       border-bottom:1px solid rgba(212,175,55,.20);
       padding:12px 0;
     }
-    .wrap{max-width:100%; padding:0 16px; margin:0 auto;}
+    .wrap{width:100%; max-width:100%; padding:0 16px; margin:0 auto; overflow: hidden;}
     .topbar{display:flex; align-items:center; justify-content:space-between; gap:12px;}
-    .brand{display:flex; align-items:center; gap:12px; flex:1;}
+    .brand{display:flex; align-items:center; gap:12px; flex:1; min-width:0;}
     .logo{
       width:50px;height:50px;border-radius:14px; overflow:hidden; flex:0 0 50px;
       background:#0f0f12 center/cover no-repeat; border:1px solid rgba(212,175,55,.35);
       box-shadow:inset 0 2px 4px rgba(255,255,255,.08),0 4px 12px rgba(0,0,0,.45);
     }
-    .brand h1{margin:0; font:900 22px/1 var(--brand-font); letter-spacing:.5px; color:var(--gold-2); text-shadow:0 2px 8px rgba(247,215,116,.25);}
-    .brand small{display:block; margin-top:2px; color:var(--muted); font-size:11px;}
+    .brand-text{min-width:0;}
+    .brand h1{margin:0; font:900 22px/1 var(--brand-font); letter-spacing:.5px; color:var(--gold-2); text-shadow:0 2px 8px rgba(247,215,116,.25); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+    .brand small{display:block; margin-top:2px; color:var(--muted); font-size:11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
     .admin-btn{
       padding:8px 12px; border-radius:10px; font-weight:800; cursor:pointer; border:1px solid rgba(212,175,55,.45);
       color:#111; background:linear-gradient(180deg, var(--gold), var(--gold-2));
@@ -67,7 +68,7 @@
     .status-pill{
       display:flex; align-items:center; gap:6px; padding:6px 10px; border-radius:10px;
       background:#0f0f12; border:1px solid rgba(212,175,55,.25); color:#d7d7dc; font-size:12px;
-      margin-left: auto;
+      margin-left: auto; flex-shrink: 0;
     }
     .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(46,204,113,.18);}
 
@@ -92,7 +93,7 @@
     }
 
     /* Conteúdo principal */
-    main{max-width:100%; margin:16px auto 100px; padding:0 16px;}
+    main{width:100%; max-width:100%; margin:16px auto 100px; padding:0 16px;}
     .grid{display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap:12px;}
     .card{
       background:linear-gradient(180deg,var(--panel-2),var(--panel)); 
@@ -278,19 +279,77 @@
     .help{font-size:12px; color:var(--muted);}
     .muted{color:var(--muted);}
 
+    /* Formulário de endereço */
+    .address-form {
+      margin-top: 16px;
+      padding: 16px;
+      background: var(--panel);
+      border-radius: var(--radius);
+      border: 1px solid rgba(212,175,55,.22);
+    }
+    .address-form h3 {
+      margin: 0 0 12px 0;
+      font: 700 16px/1 var(--ui-font);
+      color: var(--gold-2);
+    }
+    .address-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+    .address-toggle span {
+      font-size: 14px;
+    }
+    .address-fields {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .address-saved {
+      background: rgba(46, 204, 113, 0.1);
+      border: 1px solid rgba(46, 204, 113, 0.3);
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 12px;
+      display: none;
+    }
+    .address-saved p {
+      margin: 0;
+      font-size: 14px;
+    }
+    .address-saved .edit-address {
+      color: var(--gold);
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 13px;
+      margin-top: 8px;
+      display: inline-block;
+    }
+
     /* Melhorias de usabilidade para mobile */
     @media (max-width: 360px) {
-      .brand h1 { font-size: 20px; }
+      .brand h1 { font-size: 18px; }
       .brand small { font-size: 10px; }
       .admin-btn { padding: 7px 10px; font-size: 12px; }
-      .status-pill { font-size: 11px; }
-      .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+      .status-pill { font-size: 11px; padding: 5px 8px; }
+      .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+      .card .btn { padding: 6px 10px; font-size: 12px; }
+    }
+
+    @media (max-width: 480px) {
+      .topbar { flex-wrap: wrap; }
+      .status-pill { order: 3; width: 100%; justify-content: center; margin-top: 8px; margin-left: 0; }
     }
 
     @media (min-width: 768px) {
       .wrap { max-width: 720px; }
       .grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
       .grid-2 { grid-template-columns: 1fr 1fr; }
+      .address-fields { grid-template-columns: 1fr 1fr; }
+      .address-fields .field:last-child { grid-column: 1 / span 2; }
     }
 
     @media (min-width: 992px) {
@@ -328,7 +387,7 @@
       <div class="topbar">
         <div class="brand">
           <div id="brandLogo" class="logo" style="background-image:url('https://raw.githubusercontent.com/finetuner-oss/storage/main/brand/bravetto-gold.png');"></div>
-          <div>
+          <div class="brand-text">
             <h1 id="brandName">Bravetto</h1>
             <small id="brandTag">Pizzas • Hambúrgueres • Delivery</small>
           </div>
@@ -496,6 +555,7 @@
   // Configurações iniciais
   const ADMIN_PASSWORD = '1a2b3c4D@7';
   const LS_KEY = 'bravetto_menu_v1';
+  const LS_ADDRESS_KEY = 'bravetto_address';
 
   const DEFAULT_SETTINGS = {
     name:'Bravetto',
@@ -525,6 +585,8 @@
   let state = { settings: {...DEFAULT_SETTINGS}, products:[...DEFAULT_PRODUCTS] };
   let carrinho = [];
   let filtroCat = 'Todos';
+  let enderecoSalvo = null;
+  let mostrarFormEndereco = false;
 
   // Utilitários
   function $(sel) { return document.querySelector(sel); }
@@ -538,6 +600,22 @@
       if(saved) return JSON.parse(saved);
     }catch(e){}
     return { settings: {...DEFAULT_SETTINGS}, products:[...DEFAULT_PRODUCTS] };
+  }
+
+  function loadAddress(){
+    try{
+      const saved = localStorage.getItem(LS_ADDRESS_KEY);
+      if(saved) return JSON.parse(saved);
+    }catch(e){}
+    return null;
+  }
+
+  function saveAddress(){
+    if(enderecoSalvo) {
+      localStorage.setItem(LS_ADDRESS_KEY, JSON.stringify(enderecoSalvo));
+    } else {
+      localStorage.removeItem(LS_ADDRESS_KEY);
+    }
   }
 
   function persist(){ 
@@ -692,6 +770,44 @@
     document.body.style.overflow = 'auto';
   }
 
+  function toggleAddressForm(){
+    mostrarFormEndereco = !mostrarFormEndereco;
+    renderCart();
+  }
+
+  function saveAddressForm(){
+    const nome = $('#enderecoNome').value.trim();
+    const rua = $('#enderecoRua').value.trim();
+    const numero = $('#enderecoNumero').value.trim();
+    const complemento = $('#enderecoComplemento').value.trim();
+    const bairro = $('#enderecoBairro').value.trim();
+    const referencia = $('#enderecoReferencia').value.trim();
+    
+    if(!nome || !rua || !numero || !bairro) {
+      alert('Por favor, preencha pelo menos nome, rua, número e bairro.');
+      return;
+    }
+    
+    enderecoSalvo = {
+      nome,
+      rua,
+      numero,
+      complemento,
+      bairro,
+      referencia
+    };
+    
+    saveAddress();
+    mostrarFormEndereco = false;
+    renderCart();
+  }
+
+  function clearAddress(){
+    enderecoSalvo = null;
+    saveAddress();
+    renderCart();
+  }
+
   function renderCart(){
     const body = $('#cartBody');
     body.innerHTML = '';
@@ -725,7 +841,60 @@
     body.innerHTML += `
       <div class="total"><div>Subtotal</div><div>${money(subtotal)}</div></div>
       <div class="total"><div>Frete</div><div>${frete === 0 ? 'GRÁTIS' : money(frete)}</div></div>
-      <div class="total"><div>Total</div><div>${money(total)}</div></div>
+      <div class="total"><div>Total</div><div>${money(total)}</div></div>`;
+    
+    // Seção de endereço
+    body.innerHTML += `
+      <div class="address-form">
+        <h3>Endereço de entrega</h3>
+        ${enderecoSalvo && !mostrarFormEndereco ? `
+          <div class="address-saved">
+            <p><b>${enderecoSalvo.nome}</b></p>
+            <p>${enderecoSalvo.rua}, ${enderecoSalvo.numero} ${enderecoSalvo.complemento ? '- ' + enderecoSalvo.complemento : ''}</p>
+            <p>${enderecoSalvo.bairro}</p>
+            ${enderecoSalvo.referencia ? `<p>Ref: ${enderecoSalvo.referencia}</p>` : ''}
+            <span class="edit-address" onclick="toggleAddressForm()">Alterar endereço</span>
+          </div>
+        ` : `
+          <div class="address-toggle" onclick="toggleAddressForm()">
+            <input type="checkbox" ${mostrarFormEndereco ? 'checked' : ''}>
+            <span>Adicionar endereço de entrega</span>
+          </div>
+        `}
+        
+        ${mostrarFormEndereco ? `
+          <div class="address-fields">
+            <div class="field">
+              <label>Nome para entrega</label>
+              <input type="text" id="enderecoNome" value="${enderecoSalvo ? enderecoSalvo.nome : ''}" placeholder="Seu nome">
+            </div>
+            <div class="field">
+              <label>Rua</label>
+              <input type="text" id="enderecoRua" value="${enderecoSalvo ? enderecoSalvo.rua : ''}" placeholder="Nome da rua">
+            </div>
+            <div class="field">
+              <label>Número</label>
+              <input type="text" id="enderecoNumero" value="${enderecoSalvo ? enderecoSalvo.numero : ''}" placeholder="Número">
+            </div>
+            <div class="field">
+              <label>Complemento</label>
+              <input type="text" id="enderecoComplemento" value="${enderecoSalvo ? enderecoSalvo.complemento : ''}" placeholder="Apto, bloco, etc.">
+            </div>
+            <div class="field">
+              <label>Bairro</label>
+              <input type="text" id="enderecoBairro" value="${enderecoSalvo ? enderecoSalvo.bairro : ''}" placeholder="Bairro">
+            </div>
+            <div class="field">
+              <label>Ponto de referência</label>
+              <input type="text" id="enderecoReferencia" value="${enderecoSalvo ? enderecoSalvo.referencia : ''}" placeholder="Perto de...">
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end; grid-column: 1 / span 2;">
+              ${enderecoSalvo ? `<button class="btn" onclick="clearAddress()">Limpar</button>` : ''}
+              <button class="btn btn-primary" onclick="saveAddressForm()">Salvar endereço</button>
+            </div>
+          </div>
+        ` : ''}
+      </div>
       
       <textarea id="obs" placeholder="Observações do pedido" style="
         width:100%; min-height:80px; margin-top:12px; padding:10px; 
@@ -762,9 +931,19 @@
     mensagem += `*Frete:* ${frete === 0 ? 'GRÁTIS' : money(frete)}%0A`;
     mensagem += `*Total:* ${money(total)}%0A`;
     
+    // Adicionar endereço se disponível
+    if(enderecoSalvo){
+      mensagem += `%0A*Endereço de entrega:*%0A`;
+      mensagem += `${enderecoSalvo.nome}%0A`;
+      mensagem += `${enderecoSalvo.rua}, ${enderecoSalvo.numero}`;
+      if(enderecoSalvo.complemento) mensagem += ` - ${enderecoSalvo.complemento}`;
+      mensagem += `%0A${enderecoSalvo.bairro}`;
+      if(enderecoSalvo.referencia) mensagem += `%0ARef: ${enderecoSalvo.referencia}`;
+    }
+    
     const observacoes = $('#obs').value;
     if(observacoes){
-      mensagem += `%0A*Observações:* ${encodeURIComponent(observacoes)}`;
+      mensagem += `%0A%0A*Observações:* ${encodeURIComponent(observacoes)}`;
     }
     
     // Abrir WhatsApp
@@ -1067,6 +1246,9 @@
     if(savedState){
       state = savedState;
     }
+    
+    // Carregar endereço salvo
+    enderecoSalvo = loadAddress();
     
     // Aplicar tema e renderizar
     applyTheme();
