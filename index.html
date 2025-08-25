@@ -86,10 +86,15 @@
       padding:8px 14px; border-radius:20px; background:#16161a; white-space: nowrap;
       border:1px solid rgba(212,175,55,.25); cursor:pointer; font-size:13px; user-select:none;
       flex-shrink: 0;
+      transition: all 0.2s ease;
     }
     .chip.active{
       background:linear-gradient(120deg, rgba(212,175,55,.35), rgba(247,215,116,.18)); 
       border-color:rgba(212,175,55,.65);
+    }
+    .chip.dragging {
+      opacity: 0.5;
+      transform: scale(0.95);
     }
 
     /* Conteúdo principal */
@@ -557,6 +562,18 @@
   const LS_KEY = 'bravetto_menu_v1';
   const LS_ADDRESS_KEY = 'bravetto_address';
 
+  // Firebase - CONFIGURAÇÕES CORRETAS
+  const firebaseConfig = {
+    apiKey: "AIzaSyCimABHZZvGT-W4b_ouEieF0XiizLo6DVw",
+    authDomain: "cardapiobravetto.firebaseapp.com",
+    databaseURL: "https://cardapiobravetto-default-rtdb.firebaseio.com",
+    projectId: "cardapiobravetto",
+    storageBucket: "cardapiobravetto.firebasestorage.app",
+    messagingSenderId: "303652377735",
+    appId: "1:303652377735:web:f0af28ded5d3b731881422",
+    measurementId: "G-PNTPM6DESN"
+  };
+
   const DEFAULT_SETTINGS = {
     name:'Bravetto',
     tag:'Pizzas • Hambúrgueres • Delivery',
@@ -587,12 +604,64 @@
   let filtroCat = 'Todos';
   let enderecoSalvo = null;
   let mostrarFormEndereco = false;
+  let dragSrcEl = null; // Para funcionalidade de arrastar
+
+  let firebaseApp;
+  let database;
 
   // Utilitários
   function $(sel) { return document.querySelector(sel); }
   function $$(sel) { return document.querySelectorAll(sel); }
   function money(v) { return (Number(v)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
   function uid() { return 'id' + Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-3); }
+
+  function initializeFirebase() {
+    try {
+      // Verificar se o Firebase já foi inicializado
+      if (typeof firebase === 'undefined') {
+        console.error("Firebase não foi carregado corretamente");
+        return;
+      }
+      
+      // Verificar se já existe um app con o mesmo nome
+      try {
+        firebaseApp = firebase.initializeApp(firebaseConfig);
+      } catch (error) {
+        if (error.code === 'app/duplicate-app') {
+          firebaseApp = firebase.app();
+        } else {
+          throw error;
+        }
+      }
+      
+      database = firebase.database();
+      console.log("Firebase inicializado com sucesso");
+      setupRealtimeUpdates();
+    } catch (error) {
+      console.error("Erro ao inicializar Firebase:", error);
+    }
+  }
+
+  function setupRealtimeUpdates() {
+    // Ouvir mudanças nos dados
+    database.ref('menuData').on('value', (snapshot) => {
+      const remoteData = snapshot.val();
+      if (remoteData) {
+        // Atualizar o estado local com os dados remotos
+        state = remoteData;
+        
+        // Atualizar a interface
+        applyTheme();
+        renderChips();
+        render();
+        updateStatus();
+        
+        console.log("Dados atualizados em tempo real");
+      }
+    }, (error) => {
+      console.error("Erro ao escutar atualizações:", error);
+    });
+  }
 
   function loadState(){
     try{
@@ -619,7 +688,19 @@
   }
 
   function persist(){ 
-    localStorage.setItem(LS_KEY, JSON.stringify(state)); 
+    // Salvar localmente
+    localStorage.setItem(LS_KEY, JSON.stringify(state));
+    
+    // Salvar no Firebase (se estiver inicializado)
+    if (database) {
+      try {
+        database.ref('menuData').set(state)
+          .then(() => console.log("Dados salvos no Firebase"))
+          .catch(error => console.error("Erro ao salvar no Firebase:", error));
+      } catch (error) {
+        console.error("Erro ao salvar no Firebase:", error);
+      }
+    }
   }
 
   function applyTheme(){
@@ -744,6 +825,15 @@
     // Feedback tátil para mobile
     if ('vibrate' in navigator) {
       navigator.vibrate(50);
+    }
+    
+    // Feedback visual - destaque no botão
+    const button = document.querySelector(`[data-id="${produto.id}"]`);
+    if (button) {
+      button.classList.add('btn-primary');
+      setTimeout(() => {
+        if (button) button.classList.remove('btn-primary');
+      }, 300);
     }
   }
 
@@ -1026,6 +1116,54 @@
     alert('Configurações salvas com sucesso!');
   }
 
+  // Funções de drag and drop para categorias
+  function handleDragStart(e) {
+    dragSrcEl = this;
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', this.getAttribute('data-index'));
+    this.classList.add('dragging');
+  }
+
+  function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    return false;
+  }
+
+  function handleDragEnter(e) {
+    this.classList.add('over');
+  }
+
+  function handleDragLeave(e) {
+    this.classList.remove('over');
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (dragSrcEl !== this) {
+      const fromIndex = parseInt(dragSrcEl.getAttribute('data-index'));
+      const toIndex = parseInt(this.getAttribute('data-index'));
+      
+      // Reordenar categorias
+      const categoriaMovida = state.settings.categories.splice(fromIndex, 1)[0];
+      state.settings.categories.splice(toIndex, 0, categoriaMovida);
+      
+      persist();
+      renderCategoriasAdmin();
+    }
+    
+    return false;
+  }
+
+  function handleDragEnd(e) {
+    $$('#catList .chip').forEach(chip => {
+      chip.classList.remove('over');
+      chip.classList.remove('dragging');
+    });
+  }
+
   function renderCategoriasAdmin(){
     const container = $('#catList');
     container.innerHTML = '';
@@ -1034,7 +1172,18 @@
       const chip = document.createElement('div');
       chip.className = 'chip';
       chip.textContent = categoria;
+      chip.setAttribute('draggable', 'true');
+      chip.setAttribute('data-index', index);
       
+      // Eventos de drag and drop
+      chip.addEventListener('dragstart', handleDragStart);
+      chip.addEventListener('dragenter', handleDragEnter);
+      chip.addEventListener('dragover', handleDragOver);
+      chip.addEventListener('dragleave', handleDragLeave);
+      chip.addEventListener('drop', handleDrop);
+      chip.addEventListener('dragend', handleDragEnd);
+      
+      // Evento de clique para editar
       chip.addEventListener('click', () => {
         const novoNome = prompt('Novo nome para a categoria:', categoria);
         if(novoNome && novoNome.trim()){
@@ -1255,6 +1404,9 @@
     renderChips();
     render();
     
+    // Inicializar Firebase para atualizações em tempo real
+    initializeFirebase();
+    
     // Event listeners para modais
     $('#loginBack').addEventListener('click', function(e){
       if(e.target === this) hideLogin();
@@ -1290,5 +1442,7 @@
     });
   });
   </script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </body>
 </html>
