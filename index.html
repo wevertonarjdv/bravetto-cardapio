@@ -334,6 +334,83 @@
       display: inline-block;
     }
 
+    /* Status de pedidos */
+    .order-status {
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+      margin-top: 8px;
+    }
+    .status-pending {
+      background: rgba(255, 193, 7, 0.2);
+      color: #ffc107;
+      border: 1px solid rgba(255, 193, 7, 0.3);
+    }
+    .status-preparing {
+      background: rgba(0, 123, 255, 0.2);
+      color: #007bff;
+      border: 1px solid rgba(0, 123, 255, 0.3);
+    }
+    .status-ready {
+      background: rgba(40, 167, 69, 0.2);
+      color: #28a745;
+      border: 1px solid rgba(40, 167, 69, 0.3);
+    }
+    .status-delivered {
+      background: rgba(108, 117, 125, 0.2);
+      color: #6c757d;
+      border: 1px solid rgba(108, 117, 125, 0.3);
+    }
+
+    /* Painel de pedidos */
+    .orders-panel {
+      margin-top: 20px;
+    }
+    .order-card {
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(212,175,55,.22);
+    }
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .order-id {
+      font-weight: 700;
+      color: var(--gold-2);
+    }
+    .order-time {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .order-items {
+      margin-bottom: 12px;
+    }
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+    .order-total {
+      font-weight: 700;
+      border-top: 1px dashed rgba(255,255,255,.1);
+      padding-top: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .order-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
     /* Melhorias de usabilidade para mobile */
     @media (max-width: 360px) {
       .brand h1 { font-size: 18px; }
@@ -419,6 +496,12 @@
   <main>
     <div style="margin:10px 0 8px" class="muted">Toque em um item para adicionar. Revise no carrinho e finalize pelo WhatsApp.</div>
     <div id="grid" class="grid"></div>
+
+    <!-- Painel de pedidos (visível apenas no admin) -->
+    <div id="ordersPanel" class="orders-panel" style="display: none;">
+      <h2 style="margin: 24px 0 16px; font-family: var(--brand-font); color: var(--gold-2);">Pedidos em Andamento</h2>
+      <div id="ordersList"></div>
+    </div>
   </main>
 
   <!-- Floating cart -->
@@ -553,6 +636,13 @@
       <div style="display:flex; gap:10px; margin-top:12px">
         <button class="btn" onclick="addProduct()">+ Adicionar produto</button>
       </div>
+
+      <div class="hr"></div>
+
+      <!-- Pedidos -->
+      <h3>Gerenciar Pedidos</h3>
+      <div class="help">Visualize e atualize o status dos pedidos em tempo real.</div>
+      <div id="adminOrdersList"></div>
     </div>
   </div>
 
@@ -605,6 +695,8 @@
   let enderecoSalvo = null;
   let mostrarFormEndereco = false;
   let dragSrcEl = null; // Para funcionalidade de arrastar
+  let isAdmin = false;
+  let orders = [];
 
   let firebaseApp;
   let database;
@@ -623,7 +715,7 @@
         return;
       }
       
-      // Verificar se já existe um app con o mesmo nome
+      // Verificar se já existe um app com o mesmo nome
       try {
         firebaseApp = firebase.initializeApp(firebaseConfig);
       } catch (error) {
@@ -643,7 +735,7 @@
   }
 
   function setupRealtimeUpdates() {
-    // Ouvir mudanças nos dados
+    // Ouvir mudanças nos dados do cardápio
     database.ref('menuData').on('value', (snapshot) => {
       const remoteData = snapshot.val();
       if (remoteData) {
@@ -660,6 +752,29 @@
       }
     }, (error) => {
       console.error("Erro ao escutar atualizações:", error);
+    });
+
+    // Ouvir mudanças nos pedidos
+    database.ref('orders').on('value', (snapshot) => {
+      const remoteOrders = snapshot.val();
+      if (remoteOrders) {
+        // Converter objeto de pedidos em array
+        orders = Object.keys(remoteOrders).map(key => {
+          return { id: key, ...remoteOrders[key] };
+        });
+        
+        // Ordenar pedidos por data (mais recente primeiro)
+        orders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        // Atualizar a interface se for admin
+        if (isAdmin) {
+          renderAdminOrders();
+        }
+        
+        console.log("Pedidos atualizados em tempo real");
+      }
+    }, (error) => {
+      console.error("Erro ao escutar atualizações de pedidos:", error);
     });
   }
 
@@ -1036,6 +1151,9 @@
       mensagem += `%0A%0A*Observações:* ${encodeURIComponent(observacoes)}`;
     }
     
+    // Criar pedido no Firebase
+    createOrder();
+    
     // Abrir WhatsApp
     window.open(`https://wa.me/${numero}?text=${mensagem}`, '_blank');
     
@@ -1044,6 +1162,122 @@
     render();
     renderCart();
     closeCart();
+  }
+
+  function createOrder() {
+    if (!database || carrinho.length === 0) return;
+    
+    const subtotal = carrinho.reduce((total, item) => total + (item.price * item.qty), 0);
+    const frete = subtotal >= state.settings.frete_free ? 0 : state.settings.frete;
+    const total = subtotal + frete;
+    
+    const order = {
+      items: [...carrinho],
+      subtotal: subtotal,
+      delivery: frete,
+      total: total,
+      address: enderecoSalvo ? {...enderecoSalvo} : null,
+      observations: $('#obs').value || '',
+      status: 'pending',
+      timestamp: new Date().toISOString()
+    };
+    
+    // Salvar pedido no Firebase
+    database.ref('orders').push(order)
+      .then(() => {
+        console.log("Pedido salvo no Firebase");
+      })
+      .catch(error => {
+        console.error("Erro ao salvar pedido:", error);
+      });
+  }
+
+  function updateOrderStatus(orderId, status) {
+    if (!database) return;
+    
+    database.ref('orders/' + orderId).update({
+      status: status,
+      updatedAt: new Date().toISOString()
+    })
+    .then(() => {
+      console.log("Status do pedido atualizado");
+    })
+    .catch(error => {
+      console.error("Erro ao atualizar status:", error);
+    });
+  }
+
+  function renderAdminOrders() {
+    const container = $('#adminOrdersList');
+    container.innerHTML = '';
+    
+    if (orders.length === 0) {
+      container.innerHTML = '<div class="empty">Nenhum pedido encontrado</div>';
+      return;
+    }
+    
+    orders.forEach(order => {
+      const orderElement = document.createElement('div');
+      orderElement.className = 'order-card';
+      
+      const orderDate = new Date(order.timestamp);
+      const formattedDate = orderDate.toLocaleString('pt-BR');
+      
+      let statusClass = 'status-pending';
+      let statusText = 'Pendente';
+      
+      if (order.status === 'preparing') {
+        statusClass = 'status-preparing';
+        statusText = 'Em preparo';
+      } else if (order.status === 'ready') {
+        statusClass = 'status-ready';
+        statusText = 'Pronto';
+      } else if (order.status === 'delivered') {
+        statusClass = 'status-delivered';
+        statusText = 'Entregue';
+      }
+      
+      orderElement.innerHTML = `
+        <div class="order-header">
+          <div class="order-id">Pedido #${order.id.slice(-6)}</div>
+          <div class="order-time">${formattedDate}</div>
+        </div>
+        <div class="order-items">
+          ${order.items.map(item => `
+            <div class="order-item">
+              <span>${item.qty}x ${item.name}</span>
+              <span>${money(item.price * item.qty)}</span>
+            </div>
+          `).join('')}
+        </div>
+        <div class="order-total">
+          <span>Total:</span>
+          <span>${money(order.total)}</span>
+        </div>
+        ${order.address ? `
+          <div style="margin-top: 12px; font-size: 13px;">
+            <div><b>Entregar para:</b> ${order.address.nome}</div>
+            <div>${order.address.rua}, ${order.address.numero} ${order.address.complemento || ''}</div>
+            <div>${order.address.bairro}</div>
+            ${order.address.referencia ? `<div>Ref: ${order.address.referencia}</div>` : ''}
+          </div>
+        ` : ''}
+        ${order.observations ? `
+          <div style="margin-top: 8px; font-size: 13px;">
+            <b>Observações:</b> ${order.observations}
+          </div>
+        ` : ''}
+        <div class="order-status ${statusClass}">${statusText}</div>
+        <div class="order-actions">
+          <button class="btn" onclick="updateOrderStatus('${order.id}', 'pending')" ${order.status === 'pending' ? 'disabled' : ''}>Pendente</button>
+          <button class="btn" onclick="updateOrderStatus('${order.id}', 'preparing')" ${order.status === 'preparing' ? 'disabled' : ''}>Preparando</button>
+          <button class="btn" onclick="updateOrderStatus('${order.id}', 'ready')" ${order.status === 'ready' ? 'disabled' : ''}>Pronto</button>
+          <button class="btn" onclick="updateOrderStatus('${order.id}', 'delivered')" ${order.status === 'delivered' ? 'disabled' : ''}>Entregue</button>
+        </div>
+      `;
+      
+      container.appendChild(orderElement);
+    });
   }
 
   // Admin
@@ -1061,6 +1295,7 @@
 
   function checkLogin(){
     if($('#adminPass').value === ADMIN_PASSWORD){
+      isAdmin = true;
       hideLogin();
       openAdmin();
     }else{
@@ -1085,6 +1320,7 @@
     
     renderCategoriasAdmin();
     renderProdutosAdmin();
+    renderAdminOrders();
     
     $('#adminBack').style.display = 'flex';
     document.body.style.overflow = 'hidden';
@@ -1093,6 +1329,7 @@
   function closeAdmin(){
     $('#adminBack').style.display = 'none';
     document.body.style.overflow = 'auto';
+    isAdmin = false;
   }
 
   function saveAll(){
