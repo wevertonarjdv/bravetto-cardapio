@@ -10,13 +10,267 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link id="favicon" rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%23222222'/%3E%3Cpath d='M32 10c6 6-4 12-2 16 6 6 16-2 12-10 2 10-12 10-10 0 2-8-2-10-2-6z' fill='%23d4af37'/%3E%3Cpath d='M32 50c-12-6-20-18-18-36l8-3v7l-4 1c-1 13 7 22 14 26 7-4 15-13 14-26l-4-1v-7l8 3c2 18-6 30-18 36z' fill='%23f7d774'/%3E%3C/svg%3E">
   
-  <!-- Scripts do Firebase carregados primeiro -->
+  <!-- Firebase App (o núcleo do Firebase SDK é sempre necessário) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <!-- Firebase Database -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   
   <style>
-    /* Todos os estilos CSS permanecem os mesmos */
-    /* ... (todo o código CSS anterior) ... */
+    :root{
+      --bg:#0b0b0c;
+      --panel:#111114;
+      --panel-2:#141418;
+      --gold:#d4af37;
+      --gold-2:#f7d774;
+      --text:#ececf1;
+      --muted:#a1a1aa;
+      --ok:#2ecc71;
+      --danger:#ff5c5c;
+      --radius:16px;
+      --shadow:0 8px 24px rgba(0,0,0,.35);
+      --accent:var(--gold);
+      --brand-font:'Cinzel',serif;
+      --ui-font:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;
+    }
+    
+    /* Reset e estilos base */
+    *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+    html,body{height:100%; background:var(--bg); color:var(--text); font-size:15px; overflow-x: hidden;}
+    body{
+      margin:0; font-family:var(--ui-font); 
+      background:
+        radial-gradient(1400px 900px at 20% -10%, rgba(212,175,55,.10), transparent 55%),
+        radial-gradient(1000px 700px at 120% 10%, rgba(247,215,116,.06), transparent 60%),
+        var(--bg);
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    /* Header otimizado para mobile */
+    header{
+      position:sticky; top:0; z-index:30; backdrop-filter:saturate(140%) blur(8px);
+      background:linear-gradient(180deg, rgba(17,17,20,.92), rgba(17,17,20,.72));
+      border-bottom:1px solid rgba(212,175,55,.20);
+      padding:12px 0;
+    }
+    .wrap{width:100%; max-width:100%; padding:0 16px; margin:0 auto; overflow: hidden;}
+    .topbar{display:flex; align-items:center; justify-content:space-between; gap:12px;}
+    .brand{display:flex; align-items:center; gap:12px; flex:1; min-width:0;}
+    .logo{
+      width:50px;height:50px;border-radius:14px; overflow:hidden; flex:0 0 50px;
+      background:#0f0f12 center/cover no-repeat; border:1px solid rgba(212,175,55,.35);
+      box-shadow:inset 0 2px 4px rgba(255,255,255,.08),0 4px 12px rgba(0,0,0,.45);
+    }
+    .brand-text{min-width:0;}
+    .brand h1{margin:0; font:900 22px/1 var(--brand-font); letter-spacing:.5px; color:var(--gold-2); text-shadow:0 2px 8px rgba(247,215,116,.25); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+    .brand small{display:block; margin-top:2px; color:var(--muted); font-size:11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+    .admin-btn{
+      padding:8px 12px; border-radius:10px; font-weight:800; cursor:pointer; border:1px solid rgba(212,175,55,.45);
+      color:#111; background:linear-gradient(180deg, var(--gold), var(--gold-2));
+      box-shadow:0 4px 12px rgba(212,175,55,.25);
+      font-size:13px;
+      white-space: nowrap;
+    }
+    .status-pill{
+      display:flex; align-items:center; gap:6px; padding:6px 10px; border-radius:10px;
+      background:#0f0f12; border:1px solid rgba(212,175,55,.25); color:#d7d7dc; font-size:12px;
+      margin-left: auto; flex-shrink: 0;
+    }
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(46,204,113,.18);}
+
+    /* Barra de busca e categorias - otimizado para mobile */
+    .tools{display:flex; flex-direction:column; gap:12px; margin-top:12px;}
+    .search{display:flex; gap:8px;}
+    .search input{
+      flex:1; padding:14px 16px; border-radius:14px; background:#0f0f12; color:#fff; outline:none;
+      border:1px solid rgba(212,175,55,.25); box-shadow:var(--shadow); font-size:15px;
+      -webkit-appearance: none;
+    }
+    .chips{display:flex; gap:6px; flex-wrap:nowrap; align-items:center; overflow-x:auto; padding:4px 0; -webkit-overflow-scrolling: touch;}
+    .chips::-webkit-scrollbar {display: none;}
+    .chip{
+      padding:8px 14px; border-radius:20px; background:#16161a; white-space: nowrap;
+      border:1px solid rgba(212,175,55,.25); cursor:pointer; font-size:13px; user-select:none;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+    .chip.active{
+      background:linear-gradient(120deg, rgba(212,175,55,.35), rgba(247,215,116,.18)); 
+      border-color:rgba(212,175,55,.65);
+    }
+
+    /* Conteúdo principal */
+    main{width:100%; max-width:100%; margin:16px auto 100px; padding:0 16px;}
+    .grid{display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap:12px;}
+    .card{
+      background:linear-gradient(180deg,var(--panel-2),var(--panel)); 
+      border:1px solid rgba(212,175,55,.22); border-radius:var(--radius); 
+      overflow:hidden; box-shadow:var(--shadow); position:relative;
+      transition: all 0.3s ease;
+    }
+    .card.disabled {
+      opacity: 0.7;
+      filter: grayscale(0.7);
+    }
+    .availability-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: var(--danger);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      z-index: 2;
+    }
+    .thumb{aspect-ratio:1/1; background:#0d0d10 center/cover no-repeat; position: relative;}
+    .thumb::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.3);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .card.disabled .thumb::after {
+      opacity: 1;
+    }
+    .info{padding:12px;}
+    .title{font-weight:800; font-size:14px; font-family:var(--brand-font); color:var(--gold-2); line-height:1.2;}
+    .card.disabled .title {
+      color: var(--muted);
+    }
+    .desc{font-size:12px; color:var(--muted); margin-top:4px; line-height:1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;}
+    .row{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:10px;}
+    .price{font-weight:900; color:var(--gold-2); font-size:15px;}
+    .card.disabled .price {
+      color: var(--muted);
+      text-decoration: line-through;
+    }
+    .btn{
+      padding:8px 12px; border-radius:10px; border:1px solid rgba(212,175,55,.35);
+      background:linear-gradient(180deg, rgba(212,175,55,.18), rgba(212,175,55,.06)); 
+      color:#fff; cursor:pointer; font-size:13px; font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .btn:active{transform:translateY(1px);}
+    .btn-primary{
+      background:linear-gradient(180deg, rgba(212,175,55,.55), rgba(212,175,55,.28)); 
+      color:#1a1a1c; font-weight:900;
+    }
+    .btn:disabled {
+      background: #1a1a1c;
+      color: var(--muted);
+      border-color: #2a2a2c;
+      cursor: not-allowed;
+    }
+
+    /* Carrinho otimizado para mobile */
+    .cart{position:fixed; right:16px; bottom:16px; z-index:40; display:flex; align-items:center; gap:8px;}
+    .badge{
+      position:absolute; top:-6px; right:-6px; background:var(--ok); color:#0b0b0c; 
+      font-weight:900; border-radius:999px; padding:2px 6px; font-size:11px; border:2px solid #0b0b0c;
+      min-width: 18px;
+      text-align: center;
+    }
+    .sheet{
+      position:fixed; inset:0; display:none; align-items:flex-end; 
+      background:rgba(0,0,0,.6); z-index:50;
+    }
+    .sheet.open{display:flex;}
+    .panel{
+      background:#0f0f12; border-top-left-radius:20px; border-top-right-radius:20px; 
+      width:100%; max-height:85vh; overflow:auto; border-top:1px solid rgba(212,175,55,.25);
+    }
+    .panel .header{
+      display:flex; align-items:center; justify-content:space-between; 
+      padding:16px; border-bottom:1px solid rgba(255,255,255,.06);
+      position: sticky;
+      top: 0;
+      background: #0f0f12;
+      z-index: 10;
+    }
+    .panel .body{padding:16px;}
+    .cart-line{
+      display:grid; grid-template-columns: 1fr auto auto; gap:10px; align-items:center; 
+      padding:12px 0; border-bottom:1px dashed rgba(255,255,255,.08);
+    }
+    .total{
+      display:flex; align-items:center; justify-content:space-between; 
+      font-weight:900; padding:16px 0 8px; font-size: 17px;
+    }
+
+    /* Modal admin otimizado para mobile */
+    .modal-back{
+      position:fixed; inset:0; display:none; align-items:center; justify-content:center; 
+      background:rgba(0,0,0,.72); z-index:80; padding:16px;
+    }
+    .modal{
+      width:100%; max-height:90vh; overflow:auto; background:#111116; 
+      border:1px solid rgba(212,175,55,.28); border-radius:20px; box-shadow:var(--shadow); padding:16px;
+    }
+    .modal h3{margin:0 0 10px; font:900 20px/1 var(--brand-font); color:var(--gold-2);}
+    .sub{color:var(--muted); font-size:13px; margin:-6px 0 12px;}
+    .grid-2{display:grid; grid-template-columns:1fr; gap:12px;}
+    .field{display:flex; flex-direction:column; gap:6px;}
+    .field label{font-size:13px; color:var(--muted);}
+    .field input,.field select,.field textarea{
+      width:100%; padding:12px 14px; border-radius:12px; background:#0f0f12; 
+      color:#fff; border:1px solid rgba(212,175,55,.25); outline:none; font-size:15px;
+    }
+    .hr{height:1px; background:rgba(255,255,255,.08); margin:14px 0; border-radius:1px;}
+    
+    .empty{color:var(--muted); padding:12px; text-align: center;}
+    .help{font-size:12px; color:var(--muted);}
+    .muted{color:var(--muted);}
+
+    /* Loader */
+    .loader {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: var(--gold);
+      animation: spin 1s ease-in-out infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Melhorias de usabilidade para mobile */
+    @media (max-width: 360px) {
+      .brand h1 { font-size: 18px; }
+      .brand small { font-size: 10px; }
+      .admin-btn { padding: 7px 10px; font-size: 12px; }
+      .status-pill { font-size: 11px; padding: 5px 8px; }
+      .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+      .card .btn { padding: 6px 10px; font-size: 12px; }
+    }
+
+    @media (max-width: 480px) {
+      .topbar { flex-wrap: wrap; }
+      .status-pill { order: 3; width: 100%; justify-content: center; margin-top: 8px; margin-left: 0; }
+    }
+
+    @media (min-width: 768px) {
+      .wrap { max-width: 720px; }
+      .grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+      .grid-2 { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (min-width: 992px) {
+      .wrap { max-width: 960px; }
+      .grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+    }
+
+    @media (min-width: 1200px) {
+      .wrap { max-width: 1140px; }
+    }
   </style>
 </head>
 <body>
@@ -54,12 +308,6 @@
   <main>
     <div style="margin:10px 0 8px" class="muted">Toque em um item para adicionar. Revise no carrinho e finalize pelo WhatsApp.</div>
     <div id="grid" class="grid"></div>
-
-    <!-- Painel de pedidos (visível apenas no admin) -->
-    <div id="ordersPanel" class="orders-panel" style="display: none;">
-      <h2 style="margin: 24px 0 16px; font-family: var(--brand-font); color: var(--gold-2);">Pedidos em Andamento</h2>
-      <div id="ordersList"></div>
-    </div>
   </main>
 
   <!-- Floating cart -->
@@ -102,16 +350,11 @@
       <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap: wrap;">
         <h3>Painel Administrativo</h3>
         <div class="actions">
-          <button class="btn" onclick="exportBackup()">Exportar</button>
-          <label class="btn">
-            Importar <input id="importFile" type="file" accept="application/json" style="display:none">
-          </label>
-          <button class="btn" onclick="resetAll()">Resetar</button>
           <button class="btn" onclick="closeAdmin()">Fechar</button>
           <button class="btn btn-primary" onclick="saveAll()">Salvar</button>
         </div>
       </div>
-      <div class="sub">Tudo é salvo no seu navegador (LocalStorage). Não há backend.</div>
+      <div class="sub">Todas as alterações são sincronizadas automaticamente com outros dispositivos.</div>
 
       <!-- Loja -->
       <h3>Loja</h3>
@@ -127,18 +370,6 @@
         <div class="field">
           <label>Logo (URL)</label>
           <input id="st_logo" type="url" placeholder="https://...png, jpg">
-        </div>
-        <div class="field">
-          <label>Favicon (URL)</label>
-          <input id="st_fav" type="url" placeholder="https://...ico ou png">
-        </div>
-        <div class="field">
-          <label>Cor dourado (hex)</label>
-          <input id="st_gold" type="text" placeholder="#d4af37">
-        </div>
-        <div class="field">
-          <label>Cor brilho (hex)</label>
-          <input id="st_gold2" type="text" placeholder="#f7d774">
         </div>
         <div class="field">
           <label>WhatsApp (somente números, com DDI+DDD)</label>
@@ -159,58 +390,29 @@
             <option value="closed">Fechado</option>
           </select>
         </div>
-        <div class="field">
-          <label>Horário semana (ex: 18:00 - 23:30)</label>
-          <input id="st_week" type="text">
-        </div>
-        <div class="field">
-          <label>Horário fim de semana (ex: 18:00 - 00:30)</label>
-          <input id="st_weekend" type="text">
-        </div>
       </div>
-
-      <div class="hr"></div>
-
-      <!-- Categorias -->
-      <h3>Categorias</h3>
-      <div id="catList" class="chips"></div>
-      <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap">
-        <input id="newCat" class="pill" placeholder="Nova categoria (ex: Pastéis)" />
-        <button class="btn" onclick="addCategory()">Adicionar categoria</button>
-      </div>
-      <div class="help">Arraste para reordenar no cardápio.</div>
 
       <div class="hr"></div>
 
       <!-- Produtos -->
       <h3>Produtos</h3>
-      <div class="help">Edite inline. Dê Enter fora do campo para manter. Use "+ Adicionar produto".</div>
-      <div class="table">
-        <div class="thead">
-          <div>Imagem</div><div>Nome / Descrição</div><div>Preço (R$)</div><div>Categoria</div><div>Disponível</div><div>ID</div><div>Ações</div>
-        </div>
-        <div id="prodTable"></div>
-      </div>
+      <div class="help">Adicione, edite ou remova produtos. As alterações serão sincronizadas em tempo real.</div>
+      
+      <div id="prodList"></div>
+      
       <div style="display:flex; gap:10px; margin-top:12px">
         <button class="btn" onclick="addProduct()">+ Adicionar produto</button>
       </div>
-
-      <div class="hr"></div>
-
-      <!-- Pedidos -->
-      <h3>Gerenciar Pedidos</h3>
-      <div class="help">Visualize e atualize o status dos pedidos em tempo real.</div>
-      <div id="adminOrdersList"></div>
     </div>
   </div>
 
   <script>
   // Configurações iniciais
-  const ADMIN_PASSWORD = '1a2b3c4D@7';
+  const ADMIN_PASSWORD = 'admin123'; // Senha padrão para acesso administrativo
   const LS_KEY = 'bravetto_menu_v1';
   const LS_ADDRESS_KEY = 'bravetto_address';
 
-  // Firebase - CONFIGURAÇÕES CORRETAS
+  // Configuração do Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyCimABHZZvGT-W4b_ouEieF0XiizLo6DVw",
     authDomain: "cardapiobravetto.firebaseapp.com",
@@ -226,15 +428,10 @@
     name:'Bravetto',
     tag:'Pizzas • Hambúrgueres • Delivery',
     logo:'https://raw.githubusercontent.com/finetuner-oss/storage/main/brand/bravetto-gold.png',
-    favicon:'',
-    gold:'#d4af37',
-    gold2:'#f7d774',
     whatsapp:'5534991301417',
     frete:5,
     frete_free:60,
-    open:'open',
-    hours:{ week:'18:00 - 23:30', weekend:'18:00 - 00:30' },
-    categories:['Pizzas','Hambúrgueres','Pastéis','Fogazzas','Bebidas','Combos','Outros']
+    open:'open'
   };
 
   const DEFAULT_PRODUCTS = [
@@ -250,12 +447,7 @@
   let state = { settings: {...DEFAULT_SETTINGS}, products:[...DEFAULT_PRODUCTS] };
   let carrinho = [];
   let filtroCat = 'Todos';
-  let enderecoSalvo = null;
-  let mostrarFormEndereco = false;
-  let dragSrcEl = null; // Para funcionalidade de arrastar
   let isAdmin = false;
-  let orders = [];
-
   let firebaseApp;
   let database;
 
@@ -265,22 +457,15 @@
   function money(v) { return (Number(v)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
   function uid() { return 'id' + Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-3); }
 
+  // Inicialização do Firebase
   function initializeFirebase() {
     try {
-      // Verificar se o Firebase está disponível
-      if (typeof firebase === 'undefined') {
-        console.error("Firebase não foi carregado corretamente");
-        // Continuar com funcionalidade local mesmo sem Firebase
-        return false;
-      }
-      
-      // Inicializar Firebase
       firebaseApp = firebase.initializeApp(firebaseConfig);
       database = firebase.database();
       console.log("Firebase inicializado com sucesso");
       
-      // Configurar atualizações em tempo real
-      setupRealtimeUpdates();
+      // Configurar listener para atualizações em tempo real
+      setupRealtimeListener();
       return true;
     } catch (error) {
       console.error("Erro ao inicializar Firebase:", error);
@@ -289,50 +474,41 @@
     }
   }
 
-  function setupRealtimeUpdates() {
+  // Configurar listener para atualizações em tempo real
+  function setupRealtimeListener() {
     if (!database) return;
     
-    // Ouvir mudanças nos dados do cardápio
     database.ref('menuData').on('value', (snapshot) => {
       const remoteData = snapshot.val();
       if (remoteData) {
-        // Atualizar o estado local com os dados remotos
+        console.log("Dados recebidos do Firebase em tempo real");
         state = remoteData;
-        
-        // Atualizar a interface
         applyTheme();
         renderChips();
         render();
         updateStatus();
         
-        console.log("Dados atualizados em tempo real");
+        // Se estiver no painel admin, atualizar a lista de produtos também
+        if (isAdmin) {
+          renderProdutosAdmin();
+        }
       }
     }, (error) => {
       console.error("Erro ao escutar atualizações:", error);
     });
+  }
 
-    // Ouvir mudanças nos pedidos
-    database.ref('orders').on('value', (snapshot) => {
-      const remoteOrders = snapshot.val();
-      if (remoteOrders) {
-        // Converter objeto de pedidos em array
-        orders = Object.keys(remoteOrders).map(key => {
-          return { id: key, ...remoteOrders[key] };
-        });
-        
-        // Ordenar pedidos por data (mais recente primeiro)
-        orders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        
-        // Atualizar a interface se for admin
-        if (isAdmin) {
-          renderAdminOrders();
-        }
-        
-        console.log("Pedidos atualizados em tempo real");
-      }
-    }, (error) => {
-      console.error("Erro ao escutar atualizações de pedidos:", error);
-    });
+  // Salvar dados no Firebase
+  function saveToFirebase() {
+    if (!database) return;
+    
+    try {
+      database.ref('menuData').set(state)
+        .then(() => console.log("Dados salvos no Firebase"))
+        .catch(error => console.error("Erro ao salvar no Firebase:", error));
+    } catch (error) {
+      console.error("Erro ao salvar no Firebase:", error);
+    }
   }
 
   function loadState(){
@@ -343,47 +519,15 @@
     return { settings: {...DEFAULT_SETTINGS}, products:[...DEFAULT_PRODUCTS] };
   }
 
-  function loadAddress(){
-    try{
-      const saved = localStorage.getItem(LS_ADDRESS_KEY);
-      if(saved) return JSON.parse(saved);
-    }catch(e){}
-    return null;
-  }
-
-  function saveAddress(){
-    if(enderecoSalvo) {
-      localStorage.setItem(LS_ADDRESS_KEY, JSON.stringify(enderecoSalvo));
-    } else {
-      localStorage.removeItem(LS_ADDRESS_KEY);
-    }
-  }
-
   function persist(){ 
-    // Salvar localmente
     localStorage.setItem(LS_KEY, JSON.stringify(state));
-    
-    // Salvar no Firebase (se estiver inicializado)
-    if (database) {
-      try {
-        database.ref('menuData').set(state)
-          .then(() => console.log("Dados salvos no Firebase"))
-          .catch(error => console.error("Erro ao salvar no Firebase:", error));
-      } catch (error) {
-        console.error("Erro ao salvar no Firebase:", error);
-      }
-    }
+    saveToFirebase(); // Salvar também no Firebase
   }
 
   function applyTheme(){
-    document.documentElement.style.setProperty('--gold', state.settings.gold);
-    document.documentElement.style.setProperty('--gold-2', state.settings.gold2);
     $('#brandName').textContent = state.settings.name;
     $('#brandTag').textContent = state.settings.tag;
     $('#brandLogo').style.backgroundImage = `url('${state.settings.logo}')`;
-    if(state.settings.favicon){
-      $('#favicon').href = state.settings.favicon;
-    }
   }
 
   // Renderização
@@ -391,13 +535,9 @@
     const box = $('#chips'); 
     box.innerHTML = '';
     
-    const todos = document.createElement('div');
-    todos.className = 'chip' + (filtroCat==='Todos'?' active':'');
-    todos.textContent = 'Todos';
-    todos.onclick = () => { filtroCat = 'Todos'; render(); };
-    box.appendChild(todos);
+    const categorias = ['Todos', 'Pizzas', 'Hambúrgueres', 'Bebidas', 'Combos'];
     
-    state.settings.categories.forEach(cat => {
+    categorias.forEach(cat => {
       const chip = document.createElement('div');
       chip.className = 'chip' + (filtroCat===cat?' active':'');
       chip.textContent = cat;
@@ -450,31 +590,9 @@
   }
 
   function updateStatus(){
-    const aberto = state.settings.open === 'open' && isWithinHours();
+    const aberto = state.settings.open === 'open';
     $('#statusText').textContent = aberto ? 'Aberto agora' : 'Fechado no momento';
     $('#statusDot').style.background = aberto ? 'var(--ok)' : 'var(--danger)';
-    $('#hours').textContent = `(Hoje ${isWeekend() ? state.settings.hours.weekend : state.settings.hours.week})`;
-  }
-
-  function isWeekend(){ 
-    const dia = new Date().getDay();
-    return dia === 0 || dia === 6;
-  }
-
-  function isWithinHours(){
-    const agora = new Date();
-    const horario = isWeekend() ? state.settings.hours.weekend : state.settings.hours.week;
-    const [inicio, fim] = horario.split(' - ');
-    const [horaInicio, minutoInicio] = inicio.split(':').map(Number);
-    const [horaFim, minutoFim] = fim.split(':').map(Number);
-    
-    const inicioDate = new Date(agora);
-    inicioDate.setHours(horaInicio, minutoInicio, 0, 0);
-    
-    const fimDate = new Date(agora);
-    fimDate.setHours(horaFim, minutoFim, 0, 0);
-    
-    return agora >= inicioDate && agora <= fimDate;
   }
 
   // Carrinho
@@ -493,11 +611,6 @@
       });
     }
     render();
-    
-    // Feedback tátil para mobile
-    if ('vibrate' in navigator) {
-      navigator.vibrate(50);
-    }
     
     // Feedback visual - destaque no botão
     const button = document.querySelector(`[data-id="${produto.id}"]`);
@@ -530,44 +643,6 @@
   function closeCart(){
     $('#sheet').classList.remove('open');
     document.body.style.overflow = 'auto';
-  }
-
-  function toggleAddressForm(){
-    mostrarFormEndereco = !mostrarFormEndereco;
-    renderCart();
-  }
-
-  function saveAddressForm(){
-    const nome = $('#enderecoNome').value.trim();
-    const rua = $('#enderecoRua').value.trim();
-    const numero = $('#enderecoNumero').value.trim();
-    const complemento = $('#enderecoComplemento').value.trim();
-    const bairro = $('#enderecoBairro').value.trim();
-    const referencia = $('#enderecoReferencia').value.trim();
-    
-    if(!nome || !rua || !numero || !bairro) {
-      alert('Por favor, preencha pelo menos nome, rua, número e bairro.');
-      return;
-    }
-    
-    enderecoSalvo = {
-      nome,
-      rua,
-      numero,
-      complemento,
-      bairro,
-      referencia
-    };
-    
-    saveAddress();
-    mostrarFormEndereco = false;
-    renderCart();
-  }
-
-  function clearAddress(){
-    enderecoSalvo = null;
-    saveAddress();
-    renderCart();
   }
 
   function renderCart(){
@@ -603,60 +678,7 @@
     body.innerHTML += `
       <div class="total"><div>Subtotal</div><div>${money(subtotal)}</div></div>
       <div class="total"><div>Frete</div><div>${frete === 0 ? 'GRÁTIS' : money(frete)}</div></div>
-      <div class="total"><div>Total</div><div>${money(total)}</div></div>`;
-    
-    // Seção de endereço
-    body.innerHTML += `
-      <div class="address-form">
-        <h3>Endereço de entrega</h3>
-        ${enderecoSalvo && !mostrarFormEndereco ? `
-          <div class="address-saved">
-            <p><b>${enderecoSalvo.nome}</b></p>
-            <p>${enderecoSalvo.rua}, ${enderecoSalvo.numero} ${enderecoSalvo.complemento ? '- ' + enderecoSalvo.complemento : ''}</p>
-            <p>${enderecoSalvo.bairro}</p>
-            ${enderecoSalvo.referencia ? `<p>Ref: ${enderecoSalvo.referencia}</p>` : ''}
-            <span class="edit-address" onclick="toggleAddressForm()">Alterar endereço</span>
-          </div>
-        ` : `
-          <div class="address-toggle" onclick="toggleAddressForm()">
-            <input type="checkbox" ${mostrarFormEndereco ? 'checked' : ''}>
-            <span>Adicionar endereço de entrega</span>
-          </div>
-        `}
-        
-        ${mostrarFormEndereco ? `
-          <div class="address-fields">
-            <div class="field">
-              <label>Nome para entrega</label>
-              <input type="text" id="enderecoNome" value="${enderecoSalvo ? enderecoSalvo.nome : ''}" placeholder="Seu nome">
-            </div>
-            <div class="field">
-              <label>Rua</label>
-              <input type="text" id="enderecoRua" value="${enderecoSalvo ? enderecoSalvo.rua : ''}" placeholder="Nome da rua">
-            </div>
-            <div class="field">
-              <label>Número</label>
-              <input type="text" id="enderecoNumero" value="${enderecoSalvo ? enderecoSalvo.numero : ''}" placeholder="Número">
-            </div>
-            <div class="field">
-              <label>Complemento</label>
-              <input type="text" id="enderecoComplemento" value="${enderecoSalvo ? enderecoSalvo.complemento : ''}" placeholder="Apto, bloco, etc.">
-            </div>
-            <div class="field">
-              <label>Bairro</label>
-              <input type="text" id="enderecoBairro" value="${enderecoSalvo ? enderecoSalvo.bairro : ''}" placeholder="Bairro">
-            </div>
-            <div class="field">
-              <label>Ponto de referência</label>
-              <input type="text" id="enderecoReferencia" value="${enderecoSalvo ? enderecoSalvo.referencia : ''}" placeholder="Perto de...">
-            </div>
-            <div style="display: flex; gap: 10px; justify-content: flex-end; grid-column: 1 / span 2;">
-              ${enderecoSalvo ? `<button class="btn" onclick="clearAddress()">Limpar</button>` : ''}
-              <button class="btn btn-primary" onclick="saveAddressForm()">Salvar endereço</button>
-            </div>
-          </div>
-        ` : ''}
-      </div>
+      <div class="total"><div>Total</div><div>${money(total)}</div></div>
       
       <textarea id="obs" placeholder="Observações do pedido" style="
         width:100%; min-height:80px; margin-top:12px; padding:10px; 
@@ -693,23 +715,10 @@
     mensagem += `*Frete:* ${frete === 0 ? 'GRÁTIS' : money(frete)}%0A`;
     mensagem += `*Total:* ${money(total)}%0A`;
     
-    // Adicionar endereço se disponível
-    if(enderecoSalvo){
-      mensagem += `%0A*Endereço de entrega:*%0A`;
-      mensagem += `${enderecoSalvo.nome}%0A`;
-      mensagem += `${enderecoSalvo.rua}, ${enderecoSalvo.numero}`;
-      if(enderecoSalvo.complemento) mensagem += ` - ${enderecoSalvo.complemento}`;
-      mensagem += `%0A${enderecoSalvo.bairro}`;
-      if(enderecoSalvo.referencia) mensagem += `%0ARef: ${enderecoSalvo.referencia}`;
-    }
-    
     const observacoes = $('#obs').value;
     if(observacoes){
       mensagem += `%0A%0A*Observações:* ${encodeURIComponent(observacoes)}`;
     }
-    
-    // Criar pedido no Firebase
-    createOrder();
     
     // Abrir WhatsApp
     window.open(`https://wa.me/${numero}?text=${mensagem}`, '_blank');
@@ -719,122 +728,6 @@
     render();
     renderCart();
     closeCart();
-  }
-
-  function createOrder() {
-    if (!database || carrinho.length === 0) return;
-    
-    const subtotal = carrinho.reduce((total, item) => total + (item.price * item.qty), 0);
-    const frete = subtotal >= state.settings.frete_free ? 0 : state.settings.frete;
-    const total = subtotal + frete;
-    
-    const order = {
-      items: [...carrinho],
-      subtotal: subtotal,
-      delivery: frete,
-      total: total,
-      address: enderecoSalvo ? {...enderecoSalvo} : null,
-      observations: $('#obs').value || '',
-      status: 'pending',
-      timestamp: new Date().toISOString()
-    };
-    
-    // Salvar pedido no Firebase
-    database.ref('orders').push(order)
-      .then(() => {
-        console.log("Pedido salvo no Firebase");
-      })
-      .catch(error => {
-        console.error("Erro ao salvar pedido:", error);
-      });
-  }
-
-  function updateOrderStatus(orderId, status) {
-    if (!database) return;
-    
-    database.ref('orders/' + orderId).update({
-      status: status,
-      updatedAt: new Date().toISOString()
-    })
-    .then(() => {
-      console.log("Status do pedido atualizado");
-    })
-    .catch(error => {
-      console.error("Erro ao atualizar status:", error);
-    });
-  }
-
-  function renderAdminOrders() {
-    const container = $('#adminOrdersList');
-    container.innerHTML = '';
-    
-    if (orders.length === 0) {
-      container.innerHTML = '<div class="empty">Nenhum pedido encontrado</div>';
-      return;
-    }
-    
-    orders.forEach(order => {
-      const orderElement = document.createElement('div');
-      orderElement.className = 'order-card';
-      
-      const orderDate = new Date(order.timestamp);
-      const formattedDate = orderDate.toLocaleString('pt-BR');
-      
-      let statusClass = 'status-pending';
-      let statusText = 'Pendente';
-      
-      if (order.status === 'preparing') {
-        statusClass = 'status-preparing';
-        statusText = 'Em preparo';
-      } else if (order.status === 'ready') {
-        statusClass = 'status-ready';
-        statusText = 'Pronto';
-      } else if (order.status === 'delivered') {
-        statusClass = 'status-delivered';
-        statusText = 'Entregue';
-      }
-      
-      orderElement.innerHTML = `
-        <div class="order-header">
-          <div class="order-id">Pedido #${order.id.slice(-6)}</div>
-          <div class="order-time">${formattedDate}</div>
-        </div>
-        <div class="order-items">
-          ${order.items.map(item => `
-            <div class="order-item">
-              <span>${item.qty}x ${item.name}</span>
-              <span>${money(item.price * item.qty)}</span>
-            </div>
-          `).join('')}
-        </div>
-        <div class="order-total">
-          <span>Total:</span>
-          <span>${money(order.total)}</span>
-        </div>
-        ${order.address ? `
-          <div style="margin-top: 12px; font-size: 13px;">
-            <div><b>Entregar para:</b> ${order.address.nome}</div>
-            <div>${order.address.rua}, ${order.address.numero} ${order.address.complemento || ''}</div>
-            <div>${order.address.bairro}</div>
-            ${order.address.referencia ? `<div>Ref: ${order.address.referencia}</div>` : ''}
-          </div>
-        ` : ''}
-        ${order.observations ? `
-          <div style="margin-top: 8px; font-size: 13px;">
-            <b>Observações:</b> ${order.observations}
-          </div>
-        ` : ''}
-        <div class="order-status ${statusClass}">${statusText}</div>
-        <div class="order-actions">
-          <button class="btn" onclick="updateOrderStatus('${order.id}', 'pending')" ${order.status === 'pending' ? 'disabled' : ''}>Pendente</button>
-          <button class="btn" onclick="updateOrderStatus('${order.id}', 'preparing')" ${order.status === 'preparing' ? 'disabled' : ''}>Preparando</button>
-          <button class="btn" onclick="updateOrderStatus('${order.id}', 'ready')" ${order.status === 'ready' ? 'disabled' : ''}>Pronto</button>
-          <button class="btn" onclick="updateOrderStatus('${order.id}', 'delivered')" ${order.status === 'delivered' ? 'disabled' : ''}>Entregue</button>
-        </div>
-      `;
-      
-      container.appendChild(orderElement);
-    });
   }
 
   // Admin
@@ -865,19 +758,12 @@
     $('#st_name').value = state.settings.name;
     $('#st_tag').value = state.settings.tag;
     $('#st_logo').value = state.settings.logo;
-    $('#st_fav').value = state.settings.favicon;
-    $('#st_gold').value = state.settings.gold;
-    $('#st_gold2').value = state.settings.gold2;
     $('#st_wa').value = state.settings.whatsapp;
     $('#st_frete').value = state.settings.frete;
     $('#st_free').value = state.settings.frete_free;
     $('#st_open').value = state.settings.open;
-    $('#st_week').value = state.settings.hours.week;
-    $('#st_weekend').value = state.settings.hours.weekend;
     
-    renderCategoriasAdmin();
     renderProdutosAdmin();
-    renderAdminOrders();
     
     $('#adminBack').style.display = 'flex';
     document.body.style.overflow = 'hidden';
@@ -893,219 +779,79 @@
     state.settings.name = $('#st_name').value.trim();
     state.settings.tag = $('#st_tag').value.trim();
     state.settings.logo = $('#st_logo').value.trim();
-    state.settings.favicon = $('#st_fav').value.trim();
-    state.settings.gold = $('#st_gold').value.trim();
-    state.settings.gold2 = $('#st_gold2').value.trim();
     state.settings.whatsapp = $('#st_wa').value.replace(/\D/g, '');
     state.settings.frete = Number($('#st_frete').value) || 0;
     state.settings.frete_free = Number($('#st_free').value) || 0;
     state.settings.open = $('#st_open').value;
-    state.settings.hours.week = $('#st_week').value;
-    state.settings.hours.weekend = $('#st_weekend').value;
     
     persist();
     applyTheme();
     render();
     renderChips();
-    alert('Configurações salvas com sucesso!');
-  }
-
-  // Funções de drag and drop para categorias
-  function handleDragStart(e) {
-    dragSrcEl = this;
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', this.getAttribute('data-index'));
-    this.classList.add('dragging');
-  }
-
-  function handleDragOver(e) {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    return false;
-  }
-
-  function handleDragEnter(e) {
-    this.classList.add('over');
-  }
-
-  function handleDragLeave(e) {
-    this.classList.remove('over');
-  }
-
-  function handleDrop(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    if (dragSrcEl !== this) {
-      const fromIndex = parseInt(dragSrcEl.getAttribute('data-index'));
-      const toIndex = parseInt(this.getAttribute('data-index'));
-      
-      // Reordenar categorias
-      const categoriaMovida = state.settings.categories.splice(fromIndex, 1)[0];
-      state.settings.categories.splice(toIndex, 0, categoriaMovida);
-      
-      persist();
-      renderCategoriasAdmin();
-    }
-    
-    return false;
-  }
-
-  function handleDragEnd(e) {
-    $$('#catList .chip').forEach(chip => {
-      chip.classList.remove('over');
-      chip.classList.remove('dragging');
-    });
-  }
-
-  function renderCategoriasAdmin(){
-    const container = $('#catList');
-    container.innerHTML = '';
-    
-    state.settings.categories.forEach((categoria, index) => {
-      const chip = document.createElement('div');
-      chip.className = 'chip';
-      chip.textContent = categoria;
-      chip.setAttribute('draggable', 'true');
-      chip.setAttribute('data-index', index);
-      
-      // Eventos de drag and drop
-      chip.addEventListener('dragstart', handleDragStart);
-      chip.addEventListener('dragenter', handleDragEnter);
-      chip.addEventListener('dragover', handleDragOver);
-      chip.addEventListener('dragleave', handleDragLeave);
-      chip.addEventListener('drop', handleDrop);
-      chip.addEventListener('dragend', handleDragEnd);
-      
-      // Evento de clique para editar
-      chip.addEventListener('click', () => {
-        const novoNome = prompt('Novo nome para a categoria:', categoria);
-        if(novoNome && novoNome.trim()){
-          // Atualizar produtos com a categoria antiga
-          state.products.forEach(prod => {
-            if(prod.cat === categoria) prod.cat = novoNome.trim();
-          });
-          state.settings.categories[index] = novoNome.trim();
-          persist();
-          renderCategoriasAdmin();
-          renderChips();
-          renderProdutosAdmin();
-          render();
-        }
-      });
-      
-      container.appendChild(chip);
-    });
-  }
-
-  function addCategory(){
-    const nome = $('#newCat').value.trim();
-    if(!nome) return;
-    
-    if(state.settings.categories.includes(nome)){
-      alert('Esta categoria já existe!');
-      return;
-    }
-    
-    state.settings.categories.push(nome);
-    $('#newCat').value = '';
-    persist();
-    renderCategoriasAdmin();
-    renderChips();
+    alert('Configurações salvas com sucesso! As alterações serão sincronizadas com todos os dispositivos.');
   }
 
   function renderProdutosAdmin(){
-    const tbody = $('#prodTable');
-    tbody.innerHTML = '';
+    const container = $('#prodList');
+    container.innerHTML = '';
     
     if(state.products.length === 0){
-      tbody.innerHTML = '<div class="empty">Nenhum produto cadastrado</div>';
+      container.innerHTML = '<div class="empty">Nenhum produto cadastrado</div>';
       return;
     }
     
     state.products.forEach((prod, index) => {
-      const row = document.createElement('div');
-      row.className = 'trow';
-      
-      row.innerHTML = `
-        <div><input value="${prod.img || ''}" placeholder="URL da imagem" class="prod-img"></div>
-        <div>
-          <input value="${prod.name}" placeholder="Nome" class="prod-name" style="margin-bottom:6px">
-          <input value="${prod.desc || ''}" placeholder="Descrição" class="prod-desc">
+      const produtoElement = document.createElement('div');
+      produtoElement.className = 'order-card';
+      produtoElement.style.marginBottom = '12px';
+      produtoElement.innerHTML = `
+        <div class="grid-2">
+          <div class="field">
+            <label>Nome</label>
+            <input value="${prod.name}" placeholder="Nome do produto" onchange="updateProductField(${index}, 'name', this.value)">
+          </div>
+          <div class="field">
+            <label>Preço (R$)</label>
+            <input value="${prod.price}" type="number" step="0.01" min="0" onchange="updateProductField(${index}, 'price', this.value)">
+          </div>
+          <div class="field">
+            <label>Descrição</label>
+            <input value="${prod.desc || ''}" placeholder="Descrição" onchange="updateProductField(${index}, 'desc', this.value)">
+          </div>
+          <div class="field">
+            <label>Categoria</label>
+            <select onchange="updateProductField(${index}, 'cat', this.value)">
+              <option value="Pizzas" ${prod.cat === 'Pizzas' ? 'selected' : ''}>Pizzas</option>
+              <option value="Hambúrgueres" ${prod.cat === 'Hambúrgueres' ? 'selected' : ''}>Hambúrgueres</option>
+              <option value="Bebidas" ${prod.cat === 'Bebidas' ? 'selected' : ''}>Bebidas</option>
+              <option value="Combos" ${prod.cat === 'Combos' ? 'selected' : ''}>Combos</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Imagem (URL)</label>
+            <input value="${prod.img || ''}" placeholder="URL da imagem" onchange="updateProductField(${index}, 'img', this.value)">
+          </div>
+          <div class="field">
+            <label>Disponível</label>
+            <select onchange="updateProductField(${index}, 'available', this.value === 'true')">
+              <option value="true" ${prod.available ? 'selected' : ''}>Sim</option>
+              <option value="false" ${!prod.available ? 'selected' : ''}>Não</option>
+            </select>
+          </div>
         </div>
-        <div><input value="${prod.price}" type="number" step="0.01" min="0" class="prod-price"></div>
-        <div>
-          <select class="prod-category">
-            ${state.settings.categories.map(cat => 
-              `<option value="${cat}" ${prod.cat === cat ? 'selected' : ''}>${cat}</option>`
-            ).join('')}
-          </select>
+        <div style="display:flex; gap:10px; margin-top:12px; justify-content: flex-end;">
+          <button class="btn" onclick="removerProduto(${index})" style="border-color:rgba(255,92,92,.5)">Remover</button>
         </div>
-        <div>
-          <label class="switch">
-            <input type="checkbox" class="prod-available" ${prod.available ? 'checked' : ''}>
-            <span class="slider"></span>
-          </label>
-        </div>
-        <div><span class="pill">${prod.id}</span></div>
-        <div class="actions">
-          <button class="btn" onclick="duplicarProduto(${index})">Dup</button>
-          <button class="btn" onclick="removerProduto(${index})" style="border-color:rgba(255,92,92,.5)">Del</button>
-        </div>
+        <div class="hr"></div>
       `;
       
-      // Event listeners para edição em tempo real
-      row.querySelector('.prod-img').addEventListener('change', (e) => {
-        prod.img = e.target.value.trim();
-        persist();
-        render();
-      });
-      
-      row.querySelector('.prod-name').addEventListener('change', (e) => {
-        prod.name = e.target.value.trim() || 'Sem nome';
-        persist();
-        render();
-      });
-      
-      row.querySelector('.prod-desc').addEventListener('change', (e) => {
-        prod.desc = e.target.value.trim();
-        persist();
-        render();
-      });
-      
-      row.querySelector('.prod-price').addEventListener('change', (e) => {
-        prod.price = Number(e.target.value) || 0;
-        persist();
-        render();
-      });
-      
-      row.querySelector('.prod-category').addEventListener('change', (e) => {
-        prod.cat = e.target.value;
-        persist();
-        render();
-      });
-      
-      row.querySelector('.prod-available').addEventListener('change', (e) => {
-        prod.available = e.target.checked;
-        persist();
-        render();
-      });
-      
-      tbody.appendChild(row);
+      container.appendChild(produtoElement);
     });
   }
 
-  function duplicarProduto(index){
-    const original = state.products[index];
-    const copia = {
-      ...original,
-      id: uid(),
-      name: original.name + ' (cópia)'
-    };
-    state.products.splice(index + 1, 0, copia);
-    persist();
-    renderProdutosAdmin();
-    render();
+  function updateProductField(index, field, value) {
+    state.products[index][field] = field === 'price' ? Number(value) : value;
+    persist(); // Isso salvará automaticamente no Firebase também
   }
 
   function removerProduto(index){
@@ -1123,7 +869,7 @@
       name: 'Novo Produto',
       desc: '',
       price: 0,
-      cat: state.settings.categories[0] || 'Outros',
+      cat: 'Pizzas',
       img: '',
       available: true
     };
@@ -1133,55 +879,6 @@
     render();
   }
 
-  function exportBackup(){
-    const data = JSON.stringify(state, null, 2);
-    const blob = new Blob([data], {type: 'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'backup-bravetto.json';
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-
-  $('#importFile').addEventListener('change', function(e){
-    const file = e.target.files[0];
-    if(!file) return;
-    
-    const reader = new FileReader();
-    reader.onload = function(e){
-      try{
-        const dados = JSON.parse(e.target.result);
-        if(dados.settings && dados.products){
-          state = dados;
-          persist();
-          applyTheme();
-          renderChips();
-          render();
-          closeAdmin();
-          alert('Backup importado com sucesso!');
-        }else{
-          alert('Arquivo inválido');
-        }
-      }catch(error){
-        alert('Erro ao ler o arquivo: ' + error.message);
-      }
-    };
-    reader.readAsText(file);
-  });
-
-  function resetAll(){
-    if(confirm('Tem certeza que deseja resetar para os valores padrão? Todos os dados atuais serão perdidos.')){
-      state = { settings: {...DEFAULT_SETTINGS}, products: [...DEFAULT_PRODUCTS] };
-      persist();
-      applyTheme();
-      renderChips();
-      render();
-      closeAdmin();
-      alert('Sistema resetado para os valores padrão');
-    }
-  }
-
   // Inicialização
   document.addEventListener('DOMContentLoaded', function(){
     // Carregar estado salvo
@@ -1189,9 +886,6 @@
     if(savedState){
       state = savedState;
     }
-    
-    // Carregar endereço salvo
-    enderecoSalvo = loadAddress();
     
     // Aplicar tema e renderizar
     applyTheme();
@@ -1217,22 +911,6 @@
         if ($('#adminBack').style.display === 'flex') closeAdmin();
         if ($('#sheet').classList.contains('open')) closeCart();
       }
-    });
-    
-    // Atualizar status periodicamente
-    setInterval(updateStatus, 60000);
-    
-    // Prevenir zoom em inputs no iOS
-    document.addEventListener('touchstart', function(e) {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
-        document.body.style.zoom = 0.99;
-      }
-    });
-    
-    document.addEventListener('touchend', function() {
-      setTimeout(function() {
-        document.body.style.zoom = 1;
-      }, 100);
     });
   });
   </script>
