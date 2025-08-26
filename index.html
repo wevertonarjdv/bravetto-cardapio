@@ -1,87 +1,3 @@
-<!-- Firebase App (núcleo do Firebase SDK) -->
-<script defer src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<!-- Firebase Database -->
-<script defer src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
-<script>
-  // Configurações iniciais
-  const ADMIN_PASSWORD = 'admin123'; // Senha padrão
-  const LS_KEY = 'bravetto_menu_v1';
-  const LS_ADDRESS_KEY = 'bravetto_address';
-
-  // Configuração do Firebase (corrigido)
-  const firebaseConfig = {
-    apiKey: "AIzaSyCimABHZZvGT-W4b_ouEieF0XiizLo6DVw",
-    authDomain: "cardapiobravetto.firebaseapp.com",
-    databaseURL: "https://cardapiobravetto-default-rtdb.firebaseio.com",
-    projectId: "cardapiobravetto",
-    storageBucket: "cardapiobravetto.appspot.com", // ✅ corrigido
-    messagingSenderId: "303652377735",
-    appId: "1:303652377735:web:f0af28ded5d3b731881422",
-    measurementId: "G-PNTPM6DESN"
-  };
-
-  const DEFAULT_SETTINGS = {
-    name:'Bravetto',
-    tag:'Pizzas • Hambúrgueres • Delivery',
-    logo:'https://raw.githubusercontent.com/finetuner-oss/storage/main/brand/bravetto-gold.png',
-    whatsapp:'5534991301417',
-    frete:5,
-    frete_free:60,
-    open:'open'
-  };
-
-  const DEFAULT_PRODUCTS = [
-    {id:'pz-marg', name:'Pizza Margherita', desc:'Molho de tomate, muçarela, manjericão fresco.', price:39.90, cat:'Pizzas', img:'https://images.unsplash.com/photo-1542281286-9e0a16bb7366?q=80&w=500&auto=format&fit=crop', available:true},
-    {id:'pz-calab', name:'Pizza Calabresa', desc:'Calabresa fatiada, cebola, azeitona.', price:44.90, cat:'Pizzas', img:'https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=500&auto=format&fit=crop', available:true},
-    {id:'pz-frango', name:'Pizza Frango c/ Catupiry', desc:'Frango desfiado, catupiry, milho, orégano.', price:49.90, cat:'Pizzas', img:'https://images.unsplash.com/photo-1541746972996-4e0b0f43e02a?q=80&w=500&auto=format&fit=crop', available:true},
-    {id:'hb-smash', name:'Hambúrguer Smash', desc:'Carne smash 120g, queijo, picles e molho da casa.', price:27.90, cat:'Hambúrgueres', img:'https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=500&auto=format&fit=crop', available:true},
-    {id:'hb-bacon', name:'Cheese Bacon', desc:'Pão brioche, blend 160g, queijo duplo, bacon crocante.', price:31.90, cat:'Hambúrgueres', img:'https://images.unsplash.com/photo-1553979459-d2229ba7433b?q=80&w=500&auto=format&fit=crop', available:true},
-    {id:'bd-lata', name:'Refrigerante Lata', desc:'Coca-Cola, Guaraná, Fanta... (350ml).', price:7.90, cat:'Bebidas', img:'https://images.unsplash.com/photo-1622484212603-c5aa0dbf9296?q=80&w=500&auto=format&fit=crop', available:true},
-    {id:'cb-duo', name:'Combo Duo', desc:'1 Pizza média + 2 latas de refri.', price:69.90, cat:'Combos', img:'https://images.unsplash.com/photo-1561758033-d89a9ad46330?q=80&w=500&auto=format&fit=crop', available:true}
-  ];
-
-  let state = { settings: {...DEFAULT_SETTINGS}, products:[...DEFAULT_PRODUCTS] };
-  let carrinho = [];
-  let filtroCat = 'Todos';
-  let isAdmin = false;
-  let firebaseApp;
-  let database;
-
-  // Utilitários
-  function $(sel) { return document.querySelector(sel); }
-  function $$(sel) { return document.querySelectorAll(sel); }
-  function money(v) { return (Number(v)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
-  function uid() { return 'id' + Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-3); }
-
-  // Inicialização do Firebase
-  function initializeFirebase() {
-    try {
-      // Verifica se o Firebase já foi carregado
-      if (typeof firebase === 'undefined') {
-        console.error("Firebase não foi carregado corretamente");
-        return false;
-      }
-      
-      if (!firebase.apps || firebase.apps.length === 0) {
-        firebaseApp = firebase.initializeApp(firebaseConfig);
-        database = firebase.database();
-        console.log("✅ Firebase inicializado com sucesso");
-      } else {
-        firebaseApp = firebase.app();
-        database = firebase.database();
-        console.log("ℹ️ Firebase já estava inicializado");
-      }
-
-      // Configurar listener em tempo real
-      setupRealtimeListener();
-      return true;
-    } catch (error) {
-      console.error("❌ Erro ao inicializar Firebase:", error);
-      return false; // Continua funcionando localmente
-    }
-  }
-</script>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -502,7 +418,7 @@
     authDomain: "cardapiobravetto.firebaseapp.com",
     databaseURL: "https://cardapiobravetto-default-rtdb.firebaseio.com",
     projectId: "cardapiobravetto",
-    storageBucket: "cardapiobravetto.appspot.com", // ✅ corrigido
+    storageBucket: "cardapiobravetto.firebasestorage.app",
     messagingSenderId: "303652377735",
     appId: "1:303652377735:web:f0af28ded5d3b731881422",
     measurementId: "G-PNTPM6DESN"
@@ -544,28 +460,17 @@
   // Inicialização do Firebase
   function initializeFirebase() {
     try {
-      // Verifica se o Firebase já foi carregado
-      if (typeof firebase === 'undefined') {
-        console.error("Firebase não foi carregado corretamente");
-        return false;
-      }
+      firebaseApp = firebase.initializeApp(firebaseConfig);
+      database = firebase.database();
+      console.log("Firebase inicializado com sucesso");
       
-      if (!firebase.apps || firebase.apps.length === 0) {
-        firebaseApp = firebase.initializeApp(firebaseConfig);
-        database = firebase.database();
-        console.log("✅ Firebase inicializado com sucesso");
-      } else {
-        firebaseApp = firebase.app();
-        database = firebase.database();
-        console.log("ℹ️ Firebase já estava inicializado");
-      }
-
-      // Configurar listener em tempo real
+      // Configurar listener para atualizações em tempo real
       setupRealtimeListener();
       return true;
     } catch (error) {
-      console.error("❌ Erro ao inicializar Firebase:", error);
-      return false; // Continua funcionando localmente
+      console.error("Erro ao inicializar Firebase:", error);
+      // Continuar com funcionalidade local mesmo sem Firebase
+      return false;
     }
   }
 
@@ -576,7 +481,7 @@
     database.ref('menuData').on('value', (snapshot) => {
       const remoteData = snapshot.val();
       if (remoteData) {
-        console.log("✅ Dados recebidos do Firebase em tempo real");
+        console.log("Dados recebidos do Firebase em tempo real");
         state = remoteData;
         applyTheme();
         renderChips();
@@ -589,7 +494,7 @@
         }
       }
     }, (error) => {
-      console.error("❌ Erro ao escutar atualizações:", error);
+      console.error("Erro ao escutar atualizações:", error);
     });
   }
 
@@ -599,10 +504,10 @@
     
     try {
       database.ref('menuData').set(state)
-        .then(() => console.log("✅ Dados salvos no Firebase"))
-        .catch(error => console.error("❌ Erro ao salvar no Firebase:", error));
+        .then(() => console.log("Dados salvos no Firebase"))
+        .catch(error => console.error("Erro ao salvar no Firebase:", error));
     } catch (error) {
-      console.error("❌ Erro ao salvar no Firebase:", error);
+      console.error("Erro ao salvar no Firebase:", error);
     }
   }
 
