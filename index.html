@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -536,7 +535,13 @@
     const box = $('#chips'); 
     box.innerHTML = '';
     
-    const categorias = ['Todos', 'Pizzas', 'Hambúrgueres', 'Bebidas', 'Combos'];
+    // Extrair categorias únicas dos produtos
+    const categorias = ['Todos'];
+    state.products.forEach(prod => {
+      if (prod.cat && !categorias.includes(prod.cat)) {
+        categorias.push(prod.cat);
+      }
+    });
     
     categorias.forEach(cat => {
       const chip = document.createElement('div');
@@ -556,8 +561,8 @@
       const categoriaMatch = filtroCat === 'Todos' || prod.cat === filtroCat;
       const buscaMatch = !q || 
         prod.name.toLowerCase().includes(q) || 
-        prod.desc.toLowerCase().includes(q) || 
-        prod.cat.toLowerCase().includes(q);
+        (prod.desc && prod.desc.toLowerCase().includes(q)) || 
+        (prod.cat && prod.cat.toLowerCase().includes(q));
       return categoriaMatch && buscaMatch;
     });
 
@@ -851,7 +856,13 @@
   }
 
   function updateProductField(index, field, value) {
-    state.products[index][field] = field === 'price' ? Number(value) : value;
+    if (field === 'price') {
+      state.products[index][field] = Number(value);
+    } else if (field === 'available') {
+      state.products[index][field] = value === 'true';
+    } else {
+      state.products[index][field] = value;
+    }
     persist(); // Isso salvará automaticamente no Firebase também
   }
 
