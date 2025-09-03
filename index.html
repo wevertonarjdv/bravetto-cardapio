@@ -70,6 +70,51 @@
     }
     .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(46,204,113,.18);}
 
+    /* Banner de promoção */
+    .promo-banner {
+      background: linear-gradient(120deg, rgba(212,175,55,.15), rgba(247,215,116,.08));
+      border: 1px solid rgba(212,175,55,.35);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin: 16px 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .promo-banner h3 {
+      margin: 0 0 8px 0;
+      color: var(--gold-2);
+      font-family: var(--brand-font);
+      font-size: 18px;
+    }
+    .promo-banner p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--text);
+    }
+    .promo-banner img {
+      width: 100%;
+      border-radius: 12px;
+      margin-top: 12px;
+      max-height: 200px;
+      object-fit: cover;
+    }
+    .promo-banner .close-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(0,0,0,0.5);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
     .tools{display:flex; flex-direction:column; gap:12px; margin-top:12px;}
     .search{display:flex; gap:8px;}
     .search input{
@@ -135,6 +180,20 @@
       color: var(--muted);
     }
     .desc{font-size:12px; color:var(--muted); margin-top:4px; line-height:1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;}
+    .full-desc {
+      display: none;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+    .show-details {
+      color: var(--gold);
+      font-size: 12px;
+      margin-top: 6px;
+      cursor: pointer;
+      display: inline-block;
+    }
     .row{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:10px;}
     .price{font-weight:900; color:var(--gold-2); font-size:15px;}
     .card.disabled .price {
@@ -265,6 +324,17 @@
       display: inline-block;
     }
 
+    /* Mensagem geral */
+    .general-message {
+      background: rgba(212,175,55,.10);
+      border: 1px solid rgba(212,175,55,.25);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      margin: 16px 0;
+      text-align: center;
+      font-size: 14px;
+    }
+
     @media (max-width: 360px) {
       .brand h1 { font-size: 18px; }
       .brand small { font-size: 10px; }
@@ -341,6 +411,17 @@
 
   <!-- MAIN -->
   <main>
+    <!-- Mensagem Geral -->
+    <div id="generalMessage" class="general-message" style="display: none;"></div>
+    
+    <!-- Banner de Promoção -->
+    <div id="promoBanner" class="promo-banner" style="display: none;">
+      <button class="close-btn" onclick="closePromoBanner()">×</button>
+      <h3 id="promoTitle"></h3>
+      <p id="promoDescription"></p>
+      <img id="promoImage" src="" alt="Promoção do dia">
+    </div>
+    
     <div style="margin:10px 0 8px" class="muted">Toque em um item para adicionar. Revise no carrinho e finalize pelo WhatsApp.</div>
     <div id="grid" class="grid"></div>
   </main>
@@ -434,6 +515,49 @@
 
       <div class="hr"></div>
 
+      <!-- Mensagem Geral -->
+      <h3>Mensagem Geral</h3>
+      <div class="field">
+        <label>Mensagem para todos os clientes</label>
+        <textarea id="st_message" placeholder="Digite uma mensagem que aparecerá para todos os clientes"></textarea>
+      </div>
+
+      <div class="hr"></div>
+
+      <!-- Promoção do Dia -->
+      <h3>Promoção do Dia</h3>
+      <div class="grid-2">
+        <div class="field">
+          <label>Título da Promoção</label>
+          <input id="st_promo_title" type="text" placeholder="Título chamativo">
+        </div>
+        <div class="field">
+          <label>Descrição</label>
+          <textarea id="st_promo_desc" placeholder="Descreva a promoção"></textarea>
+        </div>
+        <div class="field">
+          <label>Imagem (URL)</label>
+          <input id="st_promo_img" type="url" placeholder="https://...imagem.jpg">
+        </div>
+        <div class="field">
+          <label>Status da Promoção</label>
+          <select id="st_promo_active">
+            <option value="false">Desativada</option>
+            <option value="true">Ativada</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <!-- Categorias -->
+      <h3>Categorias</h3>
+      <div class="help">Adicione, edite ou remova categorias. Para remover, deixe o campo em branco.</div>
+      <div id="categoriesList"></div>
+      <button class="btn" onclick="addCategoryField()" style="margin-top: 12px;">+ Adicionar Categoria</button>
+
+      <div class="hr"></div>
+
       <!-- Produtos -->
       <h3>Produtos</h3>
       <div class="help">Edite os campos abaixo. As alterações serão salvas automaticamente.</div>
@@ -451,6 +575,7 @@
   const ADMIN_PASSWORD = '1a2b3c4D@7';
   const LS_KEY = 'bravetto_menu_v1';
   const LS_ADDRESS_KEY = 'bravetto_address';
+  const LS_PROMO_CLOSED = 'bravetto_promo_closed';
 
   // Configuração do Firebase
   const firebaseConfig = {
@@ -471,7 +596,15 @@
     whatsapp:'5534991301417',
     frete:5,
     frete_free:60,
-    open:'open'
+    open:'open',
+    message: '',
+    promo: {
+      title: '',
+      description: '',
+      image: '',
+      active: false
+    },
+    categories: ['Pizzas', 'Hambúrgueres', 'Bebidas', 'Combos', 'Sobremesas']
   };
 
   const DEFAULT_PRODUCTS = [
@@ -484,7 +617,10 @@
     {id:'cb-duo', name:'Combo Duo', desc:'1 Pizza média + 2 latas de refri.', price:69.90, cat:'Combos', img:'https://images.unsplash.com/photo-1561758033-d89a9ad46330?q=80&w=500&auto=format&fit=crop', available:true}
   ];
 
-  let state = { settings: {...DEFAULT_SETTINGS}, products:[...DEFAULT_PRODUCTS] };
+  let state = { 
+    settings: {...DEFAULT_SETTINGS}, 
+    products:[...DEFAULT_PRODUCTS],
+  };
   let carrinho = [];
   let filtroCat = 'Todos';
   let isAdmin = false;
@@ -531,6 +667,8 @@
           renderChips();
           render();
           updateStatus();
+          renderGeneralMessage();
+          renderPromoBanner();
         } else {
           // Se não houver dados no Firebase, usar dados locais
           loadState();
@@ -558,10 +696,13 @@
         renderChips();
         render();
         updateStatus();
+        renderGeneralMessage();
+        renderPromoBanner();
         
         // Se estiver no painel admin, atualizar a lista de produtos também
         if (isAdmin) {
           renderProdutosAdmin();
+          renderCategoriesAdmin();
         }
       }
     }, (error) => {
@@ -585,7 +726,14 @@
   function loadState(){
     try{
       const saved = localStorage.getItem(LS_KEY);
-      if(saved) return JSON.parse(saved);
+      if(saved) {
+        const parsed = JSON.parse(saved);
+        // Garantir que temos as novas propriedades
+        return {
+          settings: { ...DEFAULT_SETTINGS, ...parsed.settings },
+          products: parsed.products || [...DEFAULT_PRODUCTS]
+        };
+      }
     }catch(e){}
     return { settings: {...DEFAULT_SETTINGS}, products:[...DEFAULT_PRODUCTS] };
   }
@@ -615,6 +763,42 @@
     $('#brandName').textContent = state.settings.name;
     $('#brandTag').textContent = state.settings.tag;
     $('#brandLogo').style.backgroundImage = `url('${state.settings.logo}')`;
+  }
+
+  // Mostrar mensagem geral
+  function renderGeneralMessage() {
+    const messageEl = $('#generalMessage');
+    if (state.settings.message && state.settings.message.trim() !== '') {
+      messageEl.style.display = 'block';
+      messageEl.textContent = state.settings.message;
+    } else {
+      messageEl.style.display = 'none';
+    }
+  }
+
+  // Mostrar banner de promoção
+  function renderPromoBanner() {
+    const promoEl = $('#promoBanner');
+    const promoClosed = localStorage.getItem(LS_PROMO_CLOSED);
+    
+    if (state.settings.promo && state.settings.promo.active && state.settings.promo.title && !promoClosed) {
+      promoEl.style.display = 'block';
+      $('#promoTitle').textContent = state.settings.promo.title;
+      $('#promoDescription').textContent = state.settings.promo.description;
+      if (state.settings.promo.image) {
+        $('#promoImage').src = state.settings.promo.image;
+        $('#promoImage').style.display = 'block';
+      } else {
+        $('#promoImage').style.display = 'none';
+      }
+    } else {
+      promoEl.style.display = 'none';
+    }
+  }
+
+  function closePromoBanner() {
+    $('#promoBanner').style.display = 'none';
+    localStorage.setItem(LS_PROMO_CLOSED, 'true');
   }
 
   // Renderização
@@ -667,6 +851,8 @@
         <div class="info">
           <div class="title">${prod.name}</div>
           <div class="desc">${prod.desc||''}</div>
+          <div class="full-desc">${prod.desc||''}</div>
+          ${prod.desc && prod.desc.length > 60 ? '<div class="show-details" onclick="toggleDetails(this)">Ver ingredientes</div>' : ''}
           <div class="row">
             <div class="price">${money(prod.price)}</div>
             <button class="btn" data-id="${prod.id}" ${prod.available ? '' : 'disabled'}>Add</button>
@@ -680,6 +866,22 @@
 
     $('#cartCount').textContent = carrinho.reduce((total, item) => total + item.qty, 0);
     updateStatus();
+  }
+
+  function toggleDetails(element) {
+    const card = element.closest('.card');
+    const fullDesc = card.querySelector('.full-desc');
+    const desc = card.querySelector('.desc');
+    
+    if (fullDesc.style.display === 'block') {
+      fullDesc.style.display = 'none';
+      desc.style.display = '-webkit-box';
+      element.textContent = 'Ver ingredientes';
+    } else {
+      fullDesc.style.display = 'block';
+      desc.style.display = 'none';
+      element.textContent = 'Ocultar ingredientes';
+    }
   }
 
   function updateStatus(){
@@ -790,10 +992,17 @@
       const totalItem = item.price * item.qty;
       subtotal += totalItem;
       
+      const produto = state.products.find(p => p.id === item.id);
+      const descricao = produto ? produto.desc : '';
+      
       const linha = document.createElement('div');
       linha.className = 'cart-line';
       linha.innerHTML = `
-        <div><b>${item.name}</b><br><small class="muted">${money(item.price)} x ${item.qty}</small></div>
+        <div>
+          <b>${item.name}</b>
+          ${descricao ? `<br><small class="muted" style="font-size: 11px;">${descricao}</small>` : ''}
+          <br><small class="muted">${money(item.price)} x ${item.qty}</small>
+        </div>
         <div class="qty">
           <button class="btn" onclick="changeQty('${item.id}', -1)">-</button>
           <span>${item.qty}</span>
@@ -888,7 +1097,13 @@
     let mensagem = `*Pedido ${state.settings.name}*%0A%0A`;
     
     carrinho.forEach(item => {
+      const produto = state.products.find(p => p.id === item.id);
+      const descricao = produto ? produto.desc : '';
+      
       mensagem += `• ${item.qty}x ${item.name} - ${money(item.price * item.qty)}%0A`;
+      if (descricao) {
+        mensagem += `  _${descricao}_%0A`;
+      }
     });
     
     const subtotal = carrinho.reduce((total, item) => total + (item.price * item.qty), 0);
@@ -956,8 +1171,16 @@
     $('#st_frete').value = state.settings.frete;
     $('#st_free').value = state.settings.frete_free;
     $('#st_open').value = state.settings.open;
+    $('#st_message').value = state.settings.message || '';
+    
+    // Preencher promoção
+    $('#st_promo_title').value = state.settings.promo?.title || '';
+    $('#st_promo_desc').value = state.settings.promo?.description || '';
+    $('#st_promo_img').value = state.settings.promo?.image || '';
+    $('#st_promo_active').value = state.settings.promo?.active ? 'true' : 'false';
     
     renderProdutosAdmin();
+    renderCategoriesAdmin();
     
     $('#adminBack').style.display = 'flex';
     document.body.style.overflow = 'hidden';
@@ -977,12 +1200,59 @@
     state.settings.frete = Number($('#st_frete').value) || 0;
     state.settings.frete_free = Number($('#st_free').value) || 0;
     state.settings.open = $('#st_open').value;
+    state.settings.message = $('#st_message').value.trim();
+    
+    // Salvar promoção
+    state.settings.promo = {
+      title: $('#st_promo_title').value.trim(),
+      description: $('#st_promo_desc').value.trim(),
+      image: $('#st_promo_img').value.trim(),
+      active: $('#st_promo_active').value === 'true'
+    };
+    
+    // Salvar categorias
+    const categoryInputs = $$('#categoriesList input');
+    state.settings.categories = Array.from(categoryInputs)
+      .map(input => input.value.trim())
+      .filter(cat => cat !== '');
     
     persist();
     applyTheme();
     render();
     renderChips();
+    renderGeneralMessage();
+    renderPromoBanner();
     alert('Configurações salvas com sucesso! As alterações serão sincronizadas com todos os dispositivos.');
+  }
+
+  function renderCategoriesAdmin() {
+    const container = $('#categoriesList');
+    container.innerHTML = '';
+    
+    if (!state.settings.categories) {
+      state.settings.categories = [...DEFAULT_SETTINGS.categories];
+    }
+    
+    state.settings.categories.forEach((cat, index) => {
+      const field = document.createElement('div');
+      field.className = 'field';
+      field.innerHTML = `
+        <label>Categoria ${index + 1}</label>
+        <input value="${cat}" placeholder="Nome da categoria">
+      `;
+      container.appendChild(field);
+    });
+  }
+
+  function addCategoryField() {
+    const container = $('#categoriesList');
+    const field = document.createElement('div');
+    field.className = 'field';
+    field.innerHTML = `
+      <label>Nova Categoria</label>
+      <input placeholder="Nome da categoria">
+    `;
+    container.appendChild(field);
   }
 
   function renderProdutosAdmin(){
@@ -1010,16 +1280,14 @@
           </div>
           <div class="field">
             <label>Descrição</label>
-            <input value="${prod.desc || ''}" placeholder="Descrição" onchange="updateProductField(${index}, 'desc', this.value)">
+            <textarea onchange="updateProductField(${index}, 'desc', this.value)" placeholder="Descrição completa com ingredientes">${prod.desc || ''}</textarea>
           </div>
           <div class="field">
             <label>Categoria</label>
             <select onchange="updateProductField(${index}, 'cat', this.value)">
-              <option value="Pizzas" ${prod.cat === 'Pizzas' ? 'selected' : ''}>Pizzas</option>
-              <option value="Hambúrgueres" ${prod.cat === 'Hambúrgueres' ? 'selected' : ''}>Hambúrgueres</option>
-              <option value="Bebidas" ${prod.cat === 'Bebidas' ? 'selected' : ''}>Bebidas</option>
-              <option value="Combos" ${prod.cat === 'Combos' ? 'selected' : ''}>Combos</option>
-              <option value="Outros" ${!['Pizzas','Hambúrgueres','Bebidas','Combos'].includes(prod.cat) ? 'selected' : ''}>Outros</option>
+              ${state.settings.categories.map(cat => 
+                `<option value="${cat}" ${prod.cat === cat ? 'selected' : ''}>${cat}</option>`
+              ).join('')}
             </select>
           </div>
           <div class="field">
@@ -1070,7 +1338,7 @@
       name: 'Novo Produto',
       desc: '',
       price: 0,
-      cat: 'Pizzas',
+      cat: state.settings.categories[0] || 'Pizzas',
       img: '',
       available: true
     };
@@ -1105,6 +1373,8 @@
           applyTheme();
           renderChips();
           render();
+          renderGeneralMessage();
+          renderPromoBanner();
           closeAdmin();
           alert('Backup importado com sucesso!');
         }else{
@@ -1124,6 +1394,8 @@
       applyTheme();
       renderChips();
       render();
+      renderGeneralMessage();
+      renderPromoBanner();
       closeAdmin();
       alert('Sistema resetado para os valores padrão');
     }
