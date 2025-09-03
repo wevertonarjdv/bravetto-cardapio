@@ -240,7 +240,7 @@
       width:100%; max-height:85vh; overflow:auto; border-top:1px solid rgba(212,175,55,.25);
     }
     .panel .header{
-      display:flex; align-items:center; justify-content:space-between; 
+      display:flex; align-items:center; justify-content:between; 
       padding:16px; border-bottom:1px solid rgba(255,255,255,.06);
       position: sticky;
       top: 0;
@@ -338,6 +338,18 @@
       margin: 16px 0;
       text-align: center;
       font-size: 14px;
+    }
+
+    /* NOVO: Aviso de loja fechada */
+    .store-closed-message {
+      background: rgba(255, 92, 92, 0.10);
+      border: 1px solid rgba(255, 92, 92, 0.25);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      margin: 16px 0;
+      text-align: center;
+      font-size: 14px;
+      color: #ff7a7a;
     }
 
     /* Créditos do desenvolvedor - NOVO */
@@ -444,6 +456,11 @@
     <!-- Mensagem Geral -->
     <div id="generalMessage" class="general-message" style="display: none;"></div>
     
+    <!-- Aviso de loja fechada - NOVO -->
+    <div id="storeClosedMessage" class="store-closed-message" style="display: none;">
+      <b>Loja Fechada</b> - No momento não estamos aceitando pedidos. Volte em breve!
+    </div>
+    
     <!-- Banner de Promoção -->
     <div id="promoBanner" class="promo-banner" style="display: none;">
       <button class="close-btn" onclick="closePromoBanner()">×</button>
@@ -452,7 +469,7 @@
       <img id="promoImage" src="" alt="Promoção do dia">
     </div>
     
-    <div style="margin:10px 0 8px" class="muted">Toque em um item para adicionar. Revise no carrinho e finalize pelo WhatsApp.</div>
+    <div style="margin:10px 0 8px" class="muted">Toque em um item para add. Revise no carrinho e finalize pelo WhatsApp.</div>
     <div id="grid" class="grid"></div>
   </main>
 
@@ -707,6 +724,7 @@
           updateStatus();
           renderGeneralMessage();
           renderPromoBanner();
+          renderStoreClosedMessage(); // NOVO: renderizar mensagem de loja fechada
         } else {
           // Se não houver dados no Firebase, usar dados locais
           loadState();
@@ -736,6 +754,7 @@
         updateStatus();
         renderGeneralMessage();
         renderPromoBanner();
+        renderStoreClosedMessage(); // NOVO: renderizar mensagem de loja fechada
         
         // Se estiver no painel admin, atualizar a lista de produtos também
         if (isAdmin) {
@@ -809,6 +828,16 @@
     if (state.settings.message && state.settings.message.trim() !== '') {
       messageEl.style.display = 'block';
       messageEl.textContent = state.settings.message;
+    } else {
+      messageEl.style.display = 'none';
+    }
+  }
+
+  // NOVO: Mostrar mensagem de loja fechada
+  function renderStoreClosedMessage() {
+    const messageEl = $('#storeClosedMessage');
+    if (state.settings.open === 'closed') {
+      messageEl.style.display = 'block';
     } else {
       messageEl.style.display = 'none';
     }
@@ -893,10 +922,10 @@
           ${prod.desc && prod.desc.length > 60 ? '<div class="show-details" onclick="toggleDetails(this)">Ver ingredientes</div>' : ''}
           <div class="row">
             <div class="price">${money(prod.price)}</div>
-            <button class="btn" data-id="${prod.id}" ${prod.available ? '' : 'disabled'}>Add</button>
+            <button class="btn" data-id="${prod.id}" ${(prod.available && state.settings.open === 'open') ? '' : 'disabled'}>Add</button>
           </div>
         </div>`;
-      if (prod.available) {
+      if (prod.available && state.settings.open === 'open') {
         card.querySelector('button').onclick = () => addToCart(prod);
       }
       grid.appendChild(card);
@@ -904,6 +933,7 @@
 
     $('#cartCount').textContent = carrinho.reduce((total, item) => total + item.qty, 0);
     updateStatus();
+    renderStoreClosedMessage(); // Atualizar mensagem de loja fechada
   }
 
   function toggleDetails(element) {
@@ -930,6 +960,12 @@
 
   // Carrinho
   function addToCart(produto){
+    // NOVO: Verificar se a loja está fechada
+    if (state.settings.open !== 'open') {
+      alert('A loja está fechada no momento. Não é possível adicionar itens ao carrinho.');
+      return;
+    }
+    
     if (!produto.available) return;
     
     const itemExistente = carrinho.find(item => item.id === produto.id);
@@ -1119,11 +1155,26 @@
       
       <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap">
         <button class="btn" onclick="closeCart()">Continuar comprando</button>
-        <button class="btn btn-primary" onclick="sendWhatsApp()">Finalizar no WhatsApp</button>
+        <button class="btn btn-primary" onclick="sendWhatsApp()" ${state.settings.open !== 'open' ? 'disabled' : ''}>Finalizar no WhatsApp</button>
       </div>`;
+      
+    // NOVO: Adicionar mensagem se a loja estiver fechada
+    if (state.settings.open !== 'open') {
+      body.innerHTML += `
+        <div class="store-closed-message" style="margin-top: 16px;">
+          <b>Loja Fechada</b> - No momento não estamos aceitando pedidos. Volte em breve!
+        </div>
+      `;
+    }
   }
 
   function sendWhatsApp(){
+    // NOVO: Verificar se a loja está fechada
+    if (state.settings.open !== 'open') {
+      alert('A loja está fechada no momento. Não é possível finalizar pedidos.');
+      return;
+    }
+    
     if(carrinho.length === 0) return;
     
     const numero = state.settings.whatsapp.replace(/\D/g, '');
@@ -1260,6 +1311,7 @@
     renderChips();
     renderGeneralMessage();
     renderPromoBanner();
+    renderStoreClosedMessage(); // NOVO: atualizar mensagem de loja fechada
     alert('Configurações salvas com sucesso! As alterações serão sincronizadas com todos os dispositivos.');
   }
 
@@ -1366,7 +1418,6 @@
       state.products.splice(index, 1);
       persist();
       renderProdutosAdmin();
-      render();
     }
   }
 
@@ -1383,7 +1434,6 @@
     state.products.unshift(novoProduto);
     persist();
     renderProdutosAdmin();
-    render();
   }
 
   function exportBackup(){
@@ -1413,6 +1463,7 @@
           render();
           renderGeneralMessage();
           renderPromoBanner();
+          renderStoreClosedMessage();
           closeAdmin();
           alert('Backup importado com sucesso!');
         }else{
@@ -1434,6 +1485,7 @@
       render();
       renderGeneralMessage();
       renderPromoBanner();
+      renderStoreClosedMessage();
       closeAdmin();
       alert('Sistema resetado para os valores padrão');
     }
