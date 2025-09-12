@@ -416,85 +416,35 @@
       cursor: pointer;
     }
 
-    /* Seção de avaliações */
+    /* Seção de avaliações - REMOVIDA AS FALSAS E SIMPLIFICADA */
     .ratings-section {
       margin-top: 30px;
+      text-align: center;
+      padding: 20px;
+      background: var(--panel-2);
+      border-radius: var(--radius);
     }
     .section-title {
       font-size: 18px;
       font-weight: 700;
       margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .rating-overview {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    .rating-score {
-      font-size: 36px;
-      font-weight: 900;
       color: var(--gold-2);
     }
-    .rating-stars {
-      display: flex;
-      gap: 4px;
-    }
-    .rating-stars i {
-      color: var(--gold);
-      font-size: 16px;
-    }
-    .rating-count {
+    .rating-cta {
+      margin-bottom: 16px;
       color: var(--muted);
-      font-size: 14px;
     }
-    .rating-item {
-      padding: 16px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-    .rating-user {
-      display: flex;
+    .rating-button {
+      display: inline-flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-    .user-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: var(--panel-2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-    }
-    .user-name {
-      font-weight: 600;
-    }
-    .rating-date {
-      color: var(--muted);
-      font-size: 12px;
-      margin-left: auto;
-    }
-    .rating-comment {
-      color: var(--text);
-      line-height: 1.5;
-      margin-bottom: 8px;
-    }
-    .rating-images {
-      display: flex;
       gap: 8px;
+      background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 30px;
+      font-weight: 700;
+      text-decoration: none;
       margin-top: 10px;
-    }
-    .rating-image {
-      width: 80px;
-      height: 80px;
-      border-radius: 8px;
-      object-fit: cover;
-      cursor: pointer;
     }
 
     /* Instagram integration */
@@ -619,6 +569,18 @@
       color: #ff7a7a;
     }
 
+    /* Mensagem de entrega grátis */
+    .free-delivery-message {
+      background: rgba(46, 204, 113, 0.10);
+      border: 1px solid rgba(46, 204, 113, 0.25);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      margin: 16px 0;
+      text-align: center;
+      font-size: 14px;
+      color: var(--ok);
+    }
+
     /* Créditos do desenvolvedor */
     .developer-credits {
       text-align: center;
@@ -641,6 +603,26 @@
       margin-top: 5px;
       display: block;
       text-shadow: 0 0 10px rgba(212,175,55,0.3);
+    }
+
+    /* Admin improvements */
+    .admin-section {
+      margin-bottom: 24px;
+      padding: 16px;
+      background: var(--panel);
+      border-radius: var(--radius);
+      border: 1px solid rgba(212,175,55,.22);
+    }
+    .admin-section h3 {
+      margin: 0 0 16px 0;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(212,175,55,.3);
+    }
+    .admin-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
     }
 
     @media (max-width: 360px) {
@@ -765,6 +747,11 @@
       <b>Loja Fechada</b> - No momento não estamos aceitando pedidos. Volte em breve!
     </div>
     
+    <!-- Mensagem de entrega grátis -->
+    <div id="freeDeliveryMessage" class="free-delivery-message">
+      <i class="fas fa-truck"></i> <b>Entrega grátis</b> em pedidos acima de R$ 60,00
+    </div>
+    
     <!-- Banner de Promoção -->
     <div id="promoBanner" class="promo-banner" style="display: none;">
       <button class="close-btn" onclick="closePromoBanner()">×</button>
@@ -773,17 +760,17 @@
       <img id="promoImage" src="" alt="Promoção do dia">
     </div>
     
-    <!-- Seção Instagram -->
-    <div class="instagram-section">
-      <h3 class="instagram-title">Compartilhe sua experiência</h3>
-      <p>Poste sua foto marcando @_bravetto_ no Instagram</p>
-      <a href="https://www.instagram.com/_bravetto_?igsh=cGF5MDhsbXR5YjZq&utm_source=qr">
-        <i class="fab fa-instagram"></i> Siga-nos no Instagram
-      </a>
-    </div>
-    
     <div style="margin:10px 0 8px" class="muted">Toque em um item para ver detalhes e adicionar ao pedido</div>
     <div id="grid" class="grid"></div>
+    
+    <!-- Seção Instagram -->
+    <div class="instagram-section">
+      <h3 class="instagram-title">Siga-nos no Instagram</h3>
+      <p>Poste sua experiência marcando @_bravetto_ e apareça em nossa página!</p>
+      <a href="https://www.instagram.com/_bravetto_?igsh=cGF5MDhsbXR5YjZq&utm_source=qr" class="instagram-btn">
+        <i class="fab fa-instagram"></i> Seguir @_bravetto_
+      </a>
+    </div>
   </main>
 
   <!-- Floating cart -->
@@ -830,65 +817,13 @@
           </button>
         </div>
         
-        <!-- Seção de avaliações -->
+        <!-- Seção de avaliações simplificada -->
         <div class="ratings-section">
-          <div class="section-title">
-            <span>Avaliações</span>
-            <a href="#" onclick="openRatingModal(); return false;">Avaliar produto</a>
-          </div>
-          
-          <div class="rating-overview">
-            <div class="rating-score">4.8</div>
-            <div>
-              <div class="rating-stars">
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star-half-alt"></i>
-              </div>
-              <div class="rating-count">42 avaliações</div>
-            </div>
-          </div>
-          
-          <div class="rating-item">
-            <div class="rating-user">
-              <div class="user-avatar">
-                <i class="fas fa-user"></i>
-              </div>
-              <div class="user-name">Maria Silva</div>
-              <div class="rating-date">12/05/2023</div>
-            </div>
-            <div class="rating-stars">
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-            </div>
-            <p class="rating-comment">Adorei a pizza! Veio bem quentinha e muito saborosa.</p>
-            <div class="rating-images">
-              <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=80" class="rating-image">
-            </div>
-          </div>
-          
-          <div class="rating-item">
-            <div class="rating-user">
-              <div class="user-avatar">
-                <i class="fas fa-user"></i>
-              </div>
-              <div class="user-name">João Santos</div>
-              <div class="rating-date">08/05/2023</div>
-            </div>
-            <div class="rating-stars">
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="far fa-star"></i>
-            </div>
-            <p class="rating-comment">Muito bom, mas a entrega demorou um pouco.</p>
-          </div>
+          <h3 class="section-title">Avalie nosso produto</h3>
+          <p class="rating-cta">Poste uma foto no Instagram marcando @_bravetto_</p>
+          <a href="https://www.instagram.com/_bravetto_?igsh=cGF5MDhsbXR5YjZq&utm_source=qr" class="rating-button">
+            <i class="fab fa-instagram"></i> Avaliar no Instagram
+          </a>
         </div>
       </div>
     </div>
@@ -916,105 +851,107 @@
     <div class="modal">
       <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap: wrap;">
         <h3>Painel Administrativo</h3>
-        <div class="actions">
+        <div class="admin-actions">
           <button class="btn" onclick="exportBackup()">Exportar</button>
           <label class="btn">
             Importar <input id="importFile" type="file" accept="application/json" style="display:none">
           </label>
           <button class="btn" onclick="resetAll()">Resetar</button>
           <button class="btn" onclick="closeAdmin()">Fechar</button>
-          <button class="btn btn-primary" onclick="saveAll()">Salvar</button>
+          <button class="btn btn-primary" onclick="saveAll()">Salvar Tudo</button>
         </div>
       </div>
       <div class="sub">Tudo é salvo automaticamente no Firebase e sincronizado entre dispositivos.</div>
 
       <!-- Loja -->
-      <h3>Loja</h3>
-      <div class="grid-2">
-        <div class="field">
-          <label>Nome</label>
-          <input id="st_name" type="text">
-        </div>
-        <div class="field">
-          <label>Slogan</label>
-          <input id="st_tag" type="text">
-        </div>
-        <div class="field">
-          <label>Logo (URL)</label>
-          <input id="st_logo" type="url" placeholder="https://...png, jpg">
-        </div>
-        <div class="field">
-          <label>WhatsApp (somente números, com DDI+DDD)</label>
-          <input id="st_wa" type="tel" placeholder="5534991301417">
-        </div>
-        <div class="field">
-          <label>Taxa de entrega (R$)</label>
-          <input id="st_frete" type="number" min="0" step="0.01">
-        </div>
-        <div class="field">
-          <label>Frete grátis a partir de (R$)</label>
-          <input id="st_free" type="number" min="0" step="0.01">
-        </div>
-        <div class="field">
-          <label>Status</label>
-          <select id="st_open">
-            <option value="open">Aberto</option>
-            <option value="closed">Fechado</option>
-          </select>
+      <div class="admin-section">
+        <h3>Configurações da Loja</h3>
+        <div class="grid-2">
+          <div class="field">
+            <label>Nome da Loja</label>
+            <input id="st_name" type="text">
+          </div>
+          <div class="field">
+            <label>Slogan</label>
+            <input id="st_tag" type="text">
+          </div>
+          <div class="field">
+            <label>Logo (URL)</label>
+            <input id="st_logo" type="url" placeholder="https://...png, jpg">
+          </div>
+          <div class="field">
+            <label>WhatsApp (somente números, com DDI+DDD)</label>
+            <input id="st_wa" type="tel" placeholder="5534991301417">
+          </div>
+          <div class="field">
+            <label>Taxa de entrega (R$)</label>
+            <input id="st_frete" type="number" min="0" step="0.01">
+          </div>
+          <div class="field">
+            <label>Frete grátis a partir de (R$)</label>
+            <input id="st_free" type="number" min="0" step="0.01" value="60">
+          </div>
+          <div class="field">
+            <label>Status</label>
+            <select id="st_open">
+              <option value="open">Aberto</option>
+              <option value="closed">Fechado</option>
+            </select>
+          </div>
         </div>
       </div>
-
-      <div class="hr"></div>
 
       <!-- Mensagem Geral -->
-      <h3>Mensagem Geral</h3>
-      <div class="field">
-        <label>Mensagem para todos os clientes</label>
-        <textarea id="st_message" placeholder="Digite uma mensagem que aparecerá para todos os clientes"></textarea>
+      <div class="admin-section">
+        <h3>Mensagem Geral</h3>
+        <div class="field">
+          <label>Mensagem para todos os clientes</label>
+          <textarea id="st_message" placeholder="Digite uma mensagem que aparecerá para todos os clientes"></textarea>
+        </div>
       </div>
-
-      <div class="hr"></div>
 
       <!-- Promoção do Dia -->
-      <h3>Promoção do Dia</h3>
-      <div class="grid-2">
-        <div class="field">
-          <label>Título da Promoção</label>
-          <input id="st_promo_title" type="text" placeholder="Título chamativo">
-        </div>
-        <div class="field">
-          <label>Descrição</label>
-          <textarea id="st_promo_desc" placeholder="Descreva a promoção"></textarea>
-        </div>
-        <div class="field">
-          <label>Imagem (URL)</label>
-          <input id="st_promo_img" type="url" placeholder="https://...imagem.jpg">
-        </div>
-        <div class="field">
-          <label>Status da Promoção</label>
-          <select id="st_promo_active">
-            <option value="false">Desativada</option>
-            <option value="true">Ativada</option>
-          </select>
+      <div class="admin-section">
+        <h3>Promoção do Dia</h3>
+        <div class="grid-2">
+          <div class="field">
+            <label>Título da Promoção</label>
+            <input id="st_promo_title" type="text" placeholder="Título chamativo">
+          </div>
+          <div class="field">
+            <label>Descrição</label>
+            <textarea id="st_promo_desc" placeholder="Descreva a promoção"></textarea>
+          </div>
+          <div class="field">
+            <label>Imagem (URL)</label>
+            <input id="st_promo_img" type="url" placeholder="https://...imagem.jpg">
+          </div>
+          <div class="field">
+            <label>Status da Promoção</label>
+            <select id="st_promo_active">
+              <option value="false">Desativada</option>
+              <option value="true">Ativada</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      <div class="hr"></div>
-
       <!-- Categorias -->
-      <h3>Categorias</h3>
-      <div class="help">Adicione, edite ou remova categorias. Para remover, deixe o campo em branco.</div>
-      <div id="categoriesList"></div>
-      <button class="btn" onclick="addCategoryField()" style="margin-top: 12px;">+ Adicionar Categoria</button>
-
-      <div class="hr"></div>
+      <div class="admin-section">
+        <h3>Categorias</h3>
+        <div class="help">Adicione, edite ou remova categorias. Para remover, deixe o campo em branco.</div>
+        <div id="categoriesList"></div>
+        <button class="btn" onclick="addCategoryField()" style="margin-top: 12px;">+ Adicionar Categoria</button>
+      </div>
 
       <!-- Produtos -->
-      <h3>Produtos</h3>
-      <div class="help">Edite os campos abaixo. As alterações serão salvas automaticamente.</div>
-      <div id="prodList"></div>
-      <div style="display:flex; gap:10px; margin-top:12px">
-        <button class="btn" onclick="addProduct()">+ Adicionar produto</button>
+      <div class="admin-section">
+        <h3>Produtos</h3>
+        <div class="help">Edite os campos abaixo. As alterações serão salvas automaticamente.</div>
+        <div id="prodList"></div>
+        <div style="display:flex; gap:10px; margin-top:12px">
+          <button class="btn" onclick="addProduct()">+ Adicionar produto</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1552,6 +1489,7 @@
     body.innerHTML += `
       <div class="total"><div>Subtotal</div><div>${money(subtotal)}</div></div>
       <div class="total"><div>Frete</div><div>${frete === 0 ? 'GRÁTIS' : money(frete)}</div></div>
+      ${frete === 0 ? `<div class="muted" style="text-align:right; font-size:12px; margin-top:-8px;">✓ Entrega grátis para pedidos acima de ${money(state.settings.frete_free)}</div>` : ''}
       <div class="total"><div>Total</div><div>${money(total)}</div></div>`;
     
     // Seção de endereço
@@ -1985,5 +1923,3 @@
   </script>
 </body>
 </html>
-
-
