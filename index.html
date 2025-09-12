@@ -73,6 +73,39 @@
     }
     .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(46,204,113,.18);}
 
+    /* Instagram integration - MOVED TO TOP */
+    .instagram-section {
+      background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+      padding: 16px;
+      border-radius: var(--radius);
+      margin: 16px 0;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .instagram-title {
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .instagram-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      color: #000;
+      padding: 10px 16px;
+      border-radius: 30px;
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+    .instagram-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
     /* Banner de promoção - MELHORADO */
     .promo-banner {
       background: linear-gradient(120deg, rgba(212,175,55,.15), rgba(247,215,116,.08));
@@ -447,33 +480,6 @@
       margin-top: 10px;
     }
 
-    /* Instagram integration */
-    .instagram-section {
-      background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-      padding: 20px;
-      border-radius: var(--radius);
-      margin: 30px 0;
-      text-align: center;
-    }
-    .instagram-title {
-      color: white;
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 16px;
-    }
-    .instagram-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: white;
-      color: #000;
-      padding: 12px 20px;
-      border-radius: 30px;
-      font-weight: 700;
-      text-decoration: none;
-      margin-top: 10px;
-    }
-
     .modal-back{
       position:fixed; inset:0; display:none; align-items:center; justify-content:center; 
       background:rgba(0,0,0,.72); z-index:80; padding:16px;
@@ -739,6 +745,15 @@
 
   <!-- MAIN -->
   <main>
+    <!-- Seção Instagram - MOVED TO TOP -->
+    <div class="instagram-section">
+      <h3 class="instagram-title">Siga-nos no Instagram</h3>
+      <p>Poste sua experiência marcando @_bravetto_ e apareça em nossa página!</p>
+      <a href="https://www.instagram.com/_bravetto_?igsh=cGF5MDhsbXR5YjZq&utm_source=qr" class="instagram-btn">
+        <i class="fab fa-instagram"></i> Seguir @_bravetto_
+      </a>
+    </div>
+    
     <!-- Mensagem Geral -->
     <div id="generalMessage" class="general-message" style="display: none;"></div>
     
@@ -762,15 +777,6 @@
     
     <div style="margin:10px 0 8px" class="muted">Toque em um item para ver detalhes e adicionar ao pedido</div>
     <div id="grid" class="grid"></div>
-    
-    <!-- Seção Instagram -->
-    <div class="instagram-section">
-      <h3 class="instagram-title">Siga-nos no Instagram</h3>
-      <p>Poste sua experiência marcando @_bravetto_ e apareça em nossa página!</p>
-      <a href="https://www.instagram.com/_bravetto_?igsh=cGF5MDhsbXR5YjZq&utm_source=qr" class="instagram-btn">
-        <i class="fab fa-instagram"></i> Seguir @_bravetto_
-      </a>
-    </div>
   </main>
 
   <!-- Floating cart -->
@@ -1486,10 +1492,23 @@
     const frete = subtotal >= state.settings.frete_free ? 0 : state.settings.frete;
     const total = subtotal + frete;
     
+    // Mensagem de frete grátis - ADDED TO CART
+    let freteMessage = '';
+    if (frete === 0) {
+      freteMessage = `<div class="free-delivery-message" style="margin: 12px 0;">
+        <i class="fas fa-truck"></i> <b>Entrega grátis</b> - Parabéns! Seu pedido atingiu o valor mínimo de ${money(state.settings.frete_free)}.
+      </div>`;
+    } else {
+      const valorRestante = state.settings.frete_free - subtotal;
+      freteMessage = `<div class="muted" style="text-align:center; padding: 8px; background: rgba(212,175,55,0.05); border-radius: 8px; margin: 12px 0;">
+        <i class="fas fa-info-circle"></i> Faltam ${money(valorRestante)} para ganhar <b>frete grátis</b>
+      </div>`;
+    }
+    
     body.innerHTML += `
       <div class="total"><div>Subtotal</div><div>${money(subtotal)}</div></div>
+      ${freteMessage}
       <div class="total"><div>Frete</div><div>${frete === 0 ? 'GRÁTIS' : money(frete)}</div></div>
-      ${frete === 0 ? `<div class="muted" style="text-align:right; font-size:12px; margin-top:-8px;">✓ Entrega grátis para pedidos acima de ${money(state.settings.frete_free)}</div>` : ''}
       <div class="total"><div>Total</div><div>${money(total)}</div></div>`;
     
     // Seção de endereço
