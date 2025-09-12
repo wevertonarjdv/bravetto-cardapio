@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link id="favicon" rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%23222222'/%3E%3Cpath d='M32 10c6 6-4 12-2 16 6 6 16-2 12-10 2 10-12 10-10 0 2-8-2-10-2-6z' fill='%23d4af37'/%3E%3Cpath d='M32 50c-12-6-20-18-18-36l8-3v7l-4 1c-1 13 7 22 14 26 7-4 15-13 14-26l-4-1v-7l8 3c2 18-6 30-18 36z' fill='%23f7d774'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root{
       --bg:#0b0b0c;
@@ -117,12 +118,45 @@
       font-size: 14px;
     }
 
+    /* Header estilo iFood */
+    .ifood-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+    }
+    .location-selector {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.1);
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .user-actions {
+      display: flex;
+      gap: 16px;
+    }
+    .user-actions a {
+      color: var(--text);
+      font-size: 20px;
+    }
+
     .tools{display:flex; flex-direction:column; gap:12px; margin-top:12px;}
-    .search{display:flex; gap:8px;}
+    .search{display:flex; gap:8px; position: relative;}
     .search input{
-      flex:1; padding:14px 16px; border-radius:14px; background:#0f0f12; color:#fff; outline:none;
+      flex:1; padding:14px 16px 14px 45px; border-radius:14px; background:#0f0f12; color:#fff; outline:none;
       border:1px solid rgba(212,175,55,.25); box-shadow:var(--shadow); font-size:15px;
       -webkit-appearance: none;
+    }
+    .search i {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
     }
     .chips{display:flex; gap:6px; flex-wrap:nowrap; align-items:center; overflow-x:auto; padding:4px 0; -webkit-overflow-scrolling: touch;}
     .chips::-webkit-scrollbar {display: none;}
@@ -144,6 +178,11 @@
       border:1px solid rgba(212,175,55,.22); border-radius:var(--radius); 
       overflow:hidden; box-shadow:var(--shadow); position:relative;
       transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.4);
     }
     .card.disabled {
       opacity: 0.7;
@@ -223,7 +262,22 @@
       cursor: not-allowed;
     }
 
+    /* Botão do carrinho estilo iFood */
     .cart{position:fixed; right:16px; bottom:16px; z-index:40; display:flex; align-items:center; gap:8px;}
+    .cart-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, var(--gold), var(--gold-2));
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      border: none;
+      cursor: pointer;
+    }
     .badge{
       position:absolute; top:-6px; right:-6px; background:var(--ok); color:#0b0b0c; 
       font-weight:900; border-radius:999px; padding:2px 6px; font-size:11px; border:2px solid #0b0b0c;
@@ -240,7 +294,7 @@
       width:100%; max-height:85vh; overflow:auto; border-top:1px solid rgba(212,175,55,.25);
     }
     .panel .header{
-      display:flex; align-items:center; justify-content:between; 
+      display:flex; align-items:center; justify-content:space-between; 
       padding:16px; border-bottom:1px solid rgba(255,255,255,.06);
       position: sticky;
       top: 0;
@@ -255,6 +309,219 @@
     .total{
       display:flex; align-items:center; justify-content:space-between; 
       font-weight:900; padding:16px 0 8px; font-size: 17px;
+    }
+
+    /* Modal de produto estilo iFood */
+    .product-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      z-index: 100;
+      overflow-y: auto;
+      display: none;
+    }
+    .product-modal.open {
+      display: block;
+    }
+    .product-header {
+      position: relative;
+      height: 250px;
+    }
+    .product-header img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .product-back {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(0,0,0,0.5);
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .product-body {
+      padding: 20px;
+      background: var(--panel);
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      margin-top: -20px;
+      position: relative;
+    }
+    .product-title {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--gold-2);
+      margin-bottom: 8px;
+      font-family: var(--brand-font);
+    }
+    .product-desc {
+      color: var(--muted);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    .product-price {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--gold-2);
+      margin-bottom: 20px;
+    }
+    .product-actions {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .qty-selector {
+      display: flex;
+      align-items: center;
+      background: var(--panel-2);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .qty-btn {
+      width: 40px;
+      height: 40px;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .qty-value {
+      width: 40px;
+      text-align: center;
+      font-weight: 700;
+    }
+    .add-to-cart-btn {
+      flex: 1;
+      background: linear-gradient(180deg, var(--gold), var(--gold-2));
+      border: none;
+      border-radius: 10px;
+      color: #000;
+      font-weight: 900;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    /* Seção de avaliações */
+    .ratings-section {
+      margin-top: 30px;
+    }
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .rating-overview {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .rating-score {
+      font-size: 36px;
+      font-weight: 900;
+      color: var(--gold-2);
+    }
+    .rating-stars {
+      display: flex;
+      gap: 4px;
+    }
+    .rating-stars i {
+      color: var(--gold);
+      font-size: 16px;
+    }
+    .rating-count {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .rating-item {
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .rating-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--panel-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .user-name {
+      font-weight: 600;
+    }
+    .rating-date {
+      color: var(--muted);
+      font-size: 12px;
+      margin-left: auto;
+    }
+    .rating-comment {
+      color: var(--text);
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+    .rating-images {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .rating-image {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      object-fit: cover;
+      cursor: pointer;
+    }
+
+    /* Instagram integration */
+    .instagram-section {
+      background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+      padding: 20px;
+      border-radius: var(--radius);
+      margin: 30px 0;
+      text-align: center;
+    }
+    .instagram-title {
+      color: white;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    .instagram-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      color: #000;
+      padding: 12px 20px;
+      border-radius: 30px;
+      font-weight: 700;
+      text-decoration: none;
+      margin-top: 10px;
     }
 
     .modal-back{
@@ -340,7 +607,7 @@
       font-size: 14px;
     }
 
-    /* NOVO: Aviso de loja fechada */
+    /* Aviso de loja fechada */
     .store-closed-message {
       background: rgba(255, 92, 92, 0.10);
       border: 1px solid rgba(255, 92, 92, 0.25);
@@ -352,7 +619,7 @@
       color: #ff7a7a;
     }
 
-    /* Créditos do desenvolvedor - NOVO */
+    /* Créditos do desenvolvedor */
     .developer-credits {
       text-align: center;
       padding: 20px 0;
@@ -389,6 +656,14 @@
     @media (max-width: 480px) {
       .topbar { flex-wrap: wrap; }
       .status-pill { order: 3; width: 100%; justify-content: center; margin-top: 8px; margin-left: 0; }
+      .ifood-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      .user-actions {
+        align-self: flex-end;
+      }
     }
 
     @media (min-width: 768px) {
@@ -397,6 +672,20 @@
       .grid-2 { grid-template-columns: 1fr 1fr; }
       .address-fields { grid-template-columns: 1fr 1fr; }
       .address-fields .field:last-child { grid-column: 1 / span 2; }
+      .product-modal {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .product-modal .product-content {
+        width: 600px;
+        height: auto;
+        border-radius: 20px;
+        overflow: hidden;
+      }
+      .product-header {
+        height: 300px;
+      }
     }
 
     @media (min-width: 992px) {
@@ -442,8 +731,23 @@
         <button id="adminBtn" class="admin-btn" title="Painel administrativo">Admin</button>
       </div>
 
+      <!-- Header estilo iFood -->
+      <div class="ifood-header">
+        <div class="location-selector">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>Entregar em: Minha Casa</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="user-actions">
+          <a href="#" title="Favoritos"><i class="far fa-heart"></i></a>
+          <a href="#" title="Notificações"><i class="far fa-bell"></i></a>
+          <a href="#" title="Avaliações"><i class="far fa-star"></i></a>
+        </div>
+      </div>
+
       <div class="tools">
         <div class="search">
+          <i class="fas fa-search"></i>
           <input id="q" type="search" placeholder="Buscar no cardápio..." oninput="render()"/>
         </div>
         <div id="chips" class="chips"></div>
@@ -456,7 +760,7 @@
     <!-- Mensagem Geral -->
     <div id="generalMessage" class="general-message" style="display: none;"></div>
     
-    <!-- Aviso de loja fechada - NOVO -->
+    <!-- Aviso de loja fechada -->
     <div id="storeClosedMessage" class="store-closed-message" style="display: none;">
       <b>Loja Fechada</b> - No momento não estamos aceitando pedidos. Volte em breve!
     </div>
@@ -469,13 +773,24 @@
       <img id="promoImage" src="" alt="Promoção do dia">
     </div>
     
-    <div style="margin:10px 0 8px" class="muted">Toque em um item para add. Revise no carrinho e finalize pelo WhatsApp.</div>
+    <!-- Seção Instagram -->
+    <div class="instagram-section">
+      <h3 class="instagram-title">Compartilhe sua experiência</h3>
+      <p>Poste sua foto marcando @bravetto no Instagram</p>
+      <a href="https://www.instagram.com/bravetto" target="_blank" class="instagram-btn">
+        <i class="fab fa-instagram"></i> Siga-nos no Instagram
+      </a>
+    </div>
+    
+    <div style="margin:10px 0 8px" class="muted">Toque em um item para ver detalhes e adicionar ao pedido</div>
     <div id="grid" class="grid"></div>
   </main>
 
   <!-- Floating cart -->
   <div class="cart">
-    <button class="btn btn-primary" onclick="openCart()">Carrinho</button>
+    <button class="cart-btn" onclick="openCart()">
+      <i class="fas fa-shopping-bag"></i>
+    </button>
     <span id="cartCount" class="badge">0</span>
   </div>
 
@@ -487,6 +802,95 @@
         <button class="btn" onclick="closeCart()">Fechar</button>
       </div>
       <div id="cartBody" class="body"></div>
+    </div>
+  </div>
+
+  <!-- Modal de produto -->
+  <div id="productModal" class="product-modal">
+    <div class="product-content">
+      <div class="product-header">
+        <img id="modalProductImage" src="" alt="">
+        <div class="product-back" onclick="closeProductModal()">
+          <i class="fas fa-arrow-left"></i>
+        </div>
+      </div>
+      <div class="product-body">
+        <h2 id="modalProductName" class="product-title"></h2>
+        <p id="modalProductDesc" class="product-desc"></p>
+        <div id="modalProductPrice" class="product-price"></div>
+        
+        <div class="product-actions">
+          <div class="qty-selector">
+            <button class="qty-btn" onclick="changeModalQty(-1)">-</button>
+            <div class="qty-value" id="modalQty">1</div>
+            <button class="qty-btn" onclick="changeModalQty(1)">+</button>
+          </div>
+          <button class="add-to-cart-btn" onclick="addFromModal()">
+            Adicionar • <span id="modalTotalPrice"></span>
+          </button>
+        </div>
+        
+        <!-- Seção de avaliações -->
+        <div class="ratings-section">
+          <div class="section-title">
+            <span>Avaliações</span>
+            <a href="#" onclick="openRatingModal(); return false;">Avaliar produto</a>
+          </div>
+          
+          <div class="rating-overview">
+            <div class="rating-score">4.8</div>
+            <div>
+              <div class="rating-stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+              </div>
+              <div class="rating-count">42 avaliações</div>
+            </div>
+          </div>
+          
+          <div class="rating-item">
+            <div class="rating-user">
+              <div class="user-avatar">
+                <i class="fas fa-user"></i>
+              </div>
+              <div class="user-name">Maria Silva</div>
+              <div class="rating-date">12/05/2023</div>
+            </div>
+            <div class="rating-stars">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </div>
+            <p class="rating-comment">Adorei a pizza! Veio bem quentinha e muito saborosa.</p>
+            <div class="rating-images">
+              <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=80" class="rating-image">
+            </div>
+          </div>
+          
+          <div class="rating-item">
+            <div class="rating-user">
+              <div class="user-avatar">
+                <i class="fas fa-user"></i>
+              </div>
+              <div class="user-name">João Santos</div>
+              <div class="rating-date">08/05/2023</div>
+            </div>
+            <div class="rating-stars">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="far fa-star"></i>
+            </div>
+            <p class="rating-comment">Muito bom, mas a entrega demorou um pouco.</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -615,7 +1019,7 @@
     </div>
   </div>
 
-  <!-- Créditos do desenvolvedor - NOVO -->
+  <!-- Créditos do desenvolvedor -->
   <footer class="developer-credits">
     <div class="wrap">
       <p>Desenvolvido por</p>
@@ -683,6 +1087,8 @@
   let mostrarFormEndereco = false;
   let firebaseApp;
   let database;
+  let currentProduct = null;
+  let modalQty = 1;
 
   // Utilitários
   function $(sel) { return document.querySelector(sel); }
@@ -724,7 +1130,7 @@
           updateStatus();
           renderGeneralMessage();
           renderPromoBanner();
-          renderStoreClosedMessage(); // NOVO: renderizar mensagem de loja fechada
+          renderStoreClosedMessage();
         } else {
           // Se não houver dados no Firebase, usar dados locais
           loadState();
@@ -754,7 +1160,7 @@
         updateStatus();
         renderGeneralMessage();
         renderPromoBanner();
-        renderStoreClosedMessage(); // NOVO: renderizar mensagem de loja fechada
+        renderStoreClosedMessage();
         
         // Se estiver no painel admin, atualizar a lista de produtos também
         if (isAdmin) {
@@ -833,7 +1239,7 @@
     }
   }
 
-  // NOVO: Mostrar mensagem de loja fechada
+  // Mostrar mensagem de loja fechada
   function renderStoreClosedMessage() {
     const messageEl = $('#storeClosedMessage');
     if (state.settings.open === 'closed') {
@@ -925,6 +1331,14 @@
             <button class="btn" data-id="${prod.id}" ${(prod.available && state.settings.open === 'open') ? '' : 'disabled'}>Add</button>
           </div>
         </div>`;
+      
+      // Adicionar evento de clique para abrir modal
+      card.addEventListener('click', (e) => {
+        if (!e.target.classList.contains('btn') && !e.target.classList.contains('show-details')) {
+          openProductModal(prod);
+        }
+      });
+      
       if (prod.available && state.settings.open === 'open') {
         card.querySelector('button').onclick = () => addToCart(prod);
       }
@@ -933,7 +1347,7 @@
 
     $('#cartCount').textContent = carrinho.reduce((total, item) => total + item.qty, 0);
     updateStatus();
-    renderStoreClosedMessage(); // Atualizar mensagem de loja fechada
+    renderStoreClosedMessage();
   }
 
   function toggleDetails(element) {
@@ -958,9 +1372,55 @@
     $('#statusDot').style.background = aberto ? 'var(--ok)' : 'var(--danger)';
   }
 
+  // Modal de produto
+  function openProductModal(produto) {
+    currentProduct = produto;
+    modalQty = 1;
+    
+    $('#modalProductImage').src = produto.img || '';
+    $('#modalProductName').textContent = produto.name;
+    $('#modalProductDesc').textContent = produto.desc || '';
+    $('#modalProductPrice').textContent = money(produto.price);
+    $('#modalQty').textContent = modalQty;
+    updateModalTotalPrice();
+    
+    $('#productModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeProductModal() {
+    $('#productModal').classList.remove('open');
+    document.body.style.overflow = 'auto';
+    currentProduct = null;
+  }
+
+  function changeModalQty(delta) {
+    const newQty = modalQty + delta;
+    if (newQty >= 1 && newQty <= 20) {
+      modalQty = newQty;
+      $('#modalQty').textContent = modalQty;
+      updateModalTotalPrice();
+    }
+  }
+
+  function updateModalTotalPrice() {
+    const total = currentProduct.price * modalQty;
+    $('#modalTotalPrice').textContent = money(total);
+  }
+
+  function addFromModal() {
+    if (!currentProduct) return;
+    
+    for (let i = 0; i < modalQty; i++) {
+      addToCart(currentProduct);
+    }
+    
+    closeProductModal();
+  }
+
   // Carrinho
   function addToCart(produto){
-    // NOVO: Verificar se a loja está fechada
+    // Verificar se a loja está fechada
     if (state.settings.open !== 'open') {
       alert('A loja está fechada no momento. Não é possível adicionar itens ao carrinho.');
       return;
@@ -1158,7 +1618,7 @@
         <button class="btn btn-primary" onclick="sendWhatsApp()" ${state.settings.open !== 'open' ? 'disabled' : ''}>Finalizar no WhatsApp</button>
       </div>`;
       
-    // NOVO: Adicionar mensagem se a loja estiver fechada
+    // Adicionar mensagem se a loja estiver fechada
     if (state.settings.open !== 'open') {
       body.innerHTML += `
         <div class="store-closed-message" style="margin-top: 16px;">
@@ -1169,7 +1629,7 @@
   }
 
   function sendWhatsApp(){
-    // NOVO: Verificar se a loja está fechada
+    // Verificar se a loja está fechada
     if (state.settings.open !== 'open') {
       alert('A loja está fechada no momento. Não é possível finalizar pedidos.');
       return;
@@ -1311,7 +1771,7 @@
     renderChips();
     renderGeneralMessage();
     renderPromoBanner();
-    renderStoreClosedMessage(); // NOVO: atualizar mensagem de loja fechada
+    renderStoreClosedMessage();
     alert('Configurações salvas com sucesso! As alterações serão sincronizadas com todos os dispositivos.');
   }
 
@@ -1481,8 +1941,8 @@
       state = { settings: {...DEFAULT_SETTINGS}, products: [...DEFAULT_PRODUCTS] };
       persist();
       applyTheme();
-      renderChips();
       render();
+      renderChips();
       renderGeneralMessage();
       renderPromoBanner();
       renderStoreClosedMessage();
@@ -1508,12 +1968,17 @@
       if(e.target === this) closeAdmin();
     });
     
+    $('#productModal').addEventListener('click', function(e){
+      if(e.target === this) closeProductModal();
+    });
+    
     // Fechar modais com ESC
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') {
         if ($('#loginBack').style.display === 'flex') hideLogin();
         if ($('#adminBack').style.display === 'flex') closeAdmin();
         if ($('#sheet').classList.contains('open')) closeCart();
+        if ($('#productModal').classList.contains('open')) closeProductModal();
       }
     });
   });
