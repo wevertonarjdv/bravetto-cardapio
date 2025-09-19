@@ -4,7 +4,7 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
   <meta name="robots" content="noindex,nofollow"/>
-  <title>Bravetto | Cardápio Digital</title>
+  <title>Bravetto</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -151,13 +151,7 @@
       font-size: 14px;
     }
 
-    /* Header estilo iFood */
-    .ifood-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 0;
-    }
+    /* Header simplificado - REMOVIDOS ícones não funcionais */
     .location-selector {
       display: flex;
       align-items: center;
@@ -167,14 +161,8 @@
       border-radius: 20px;
       font-size: 14px;
       cursor: pointer;
-    }
-    .user-actions {
-      display: flex;
-      gap: 16px;
-    }
-    .user-actions a {
-      color: var(--text);
-      font-size: 20px;
+      margin-top: 10px;
+      width: fit-content;
     }
 
     .tools{display:flex; flex-direction:column; gap:12px; margin-top:12px;}
@@ -644,14 +632,6 @@
     @media (max-width: 480px) {
       .topbar { flex-wrap: wrap; }
       .status-pill { order: 3; width: 100%; justify-content: center; margin-top: 8px; margin-left: 0; }
-      .ifood-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-      }
-      .user-actions {
-        align-self: flex-end;
-      }
     }
 
     @media (min-width: 768px) {
@@ -719,18 +699,11 @@
         <button id="adminBtn" class="admin-btn" title="Painel administrativo">Admin</button>
       </div>
 
-      <!-- Header estilo iFood -->
-      <div class="ifood-header">
-        <div class="location-selector">
-          <i class="fas fa-map-marker-alt"></i>
-          <span>Entregar em: Minha Casa</span>
-          <i class="fas fa-chevron-down"></i>
-        </div>
-        <div class="user-actions">
-          <a href="#" title="Favoritos"><i class="far fa-heart"></i></a>
-          <a href="#" title="Notificações"><i class="far fa-bell"></i></a>
-          <a href="#" title="Avaliações"><i class="far fa-star"></i></a>
-        </div>
+      <!-- Localização simplificada -->
+      <div class="location-selector">
+        <i class="fas fa-map-marker-alt"></i>
+        <span>Entregar em: Minha Casa</span>
+        <i class="fas fa-chevron-down"></i>
       </div>
 
       <div class="tools">
@@ -1856,7 +1829,7 @@
   function exportBackup(){
     const data = JSON.stringify(state, null, 2);
     const blob = new Blob([data], {type: 'application/json'});
-    const url = URL.createObjectURL(blob);
+    const url = URL.revokeObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = 'backup-bravetto.json';
