@@ -619,6 +619,228 @@
       margin-top: 16px;
     }
 
+    /* NOVA SEÇÃO: Sorteio Bravetto */
+    .sorteio-section {
+      background: linear-gradient(135deg, rgba(212,175,55,.15), rgba(247,215,116,.08));
+      border: 1px solid rgba(212,175,55,.35);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin: 16px 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .sorteio-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--gold), var(--gold-2));
+    }
+    .sorteio-logo {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 16px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-2));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: #0b0b0c;
+      box-shadow: 0 4px 12px rgba(212,175,55,.3);
+    }
+    .sorteio-title {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--gold-2);
+      margin-bottom: 8px;
+      font-family: var(--brand-font);
+      text-shadow: 0 2px 8px rgba(247,215,116,.25);
+    }
+    .sorteio-subtitle {
+      color: var(--muted);
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+    .sorteio-form {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .sorteio-form .field {
+      text-align: left;
+    }
+    .sorteio-btn {
+      background: linear-gradient(180deg, var(--gold), var(--gold-2));
+      color: #0b0b0c;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 20px;
+      font-weight: 900;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+    .sorteio-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(212,175,55,.4);
+    }
+    .sorteio-btn:disabled {
+      background: #2a2a2c;
+      color: var(--muted);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    .sorteio-success {
+      background: rgba(46, 204, 113, 0.1);
+      border: 1px solid rgba(46, 204, 113, 0.3);
+      border-radius: 10px;
+      padding: 16px;
+      margin-top: 16px;
+      display: none;
+    }
+    .sorteio-success p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--ok);
+    }
+    .sorteio-participants {
+      margin-top: 20px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .sorteio-participants strong {
+      color: var(--gold-2);
+    }
+
+    /* Modal de sorteio - Roleta */
+    .sorteio-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 20px;
+    }
+    .sorteio-modal.open {
+      display: flex;
+    }
+    .sorteio-modal-content {
+      background: var(--panel);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      border: 1px solid rgba(212,175,55,.3);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .sorteio-modal-title {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--gold-2);
+      margin-bottom: 16px;
+      font-family: var(--brand-font);
+    }
+    .roleta-container {
+      width: 300px;
+      height: 300px;
+      margin: 20px auto;
+      position: relative;
+    }
+    .roleta {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: conic-gradient(
+        from 0deg,
+        #d4af37 0deg 90deg,
+        #f7d774 90deg 180deg,
+        #d4af37 180deg 270deg,
+        #f7d774 270deg 360deg
+      );
+      position: relative;
+      transition: transform 4s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transform: rotate(0deg);
+      box-shadow: 0 0 20px rgba(212,175,55,.5);
+    }
+    .roleta-ponteiro {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 15px solid transparent;
+      border-right: 15px solid transparent;
+      border-top: 30px solid var(--gold-2);
+      z-index: 10;
+    }
+    .roleta-vencedor {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100px;
+      height: 100px;
+      background: var(--panel);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      color: var(--gold-2);
+      font-size: 18px;
+      border: 4px solid var(--gold);
+      box-shadow: 0 0 0 8px rgba(212,175,55,.2);
+    }
+    .sorteio-resultado {
+      margin-top: 20px;
+      padding: 20px;
+      background: rgba(46, 204, 113, 0.1);
+      border-radius: 10px;
+      border: 1px solid rgba(46, 204, 113, 0.3);
+      display: none;
+    }
+    .sorteio-resultado h3 {
+      color: var(--ok);
+      margin-bottom: 10px;
+    }
+    .sorteio-resultado p {
+      margin: 5px 0;
+      font-size: 16px;
+    }
+    .sorteio-resultado .whatsapp-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #25D366;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 30px;
+      font-weight: 700;
+      text-decoration: none;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+    }
+    .sorteio-resultado .whatsapp-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(37,211,102,0.3);
+    }
+
     @media (max-width: 360px) {
       .brand h1 { font-size: 18px; }
       .brand small { font-size: 10px; }
@@ -627,11 +849,14 @@
       .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
       .card .btn { padding: 6px 10px; font-size: 12px; }
       .title { min-height: 30px; font-size: 13px; }
+      .roleta-container { width: 250px; height: 250px; }
+      .roleta-vencedor { width: 80px; height: 80px; font-size: 16px; }
     }
 
     @media (max-width: 480px) {
       .topbar { flex-wrap: wrap; }
       .status-pill { order: 3; width: 100%; justify-content: center; margin-top: 8px; margin-left: 0; }
+      .sorteio-modal-content { padding: 20px; }
     }
 
     @media (min-width: 768px) {
@@ -653,6 +878,9 @@
       }
       .product-header {
         height: 300px;
+      }
+      .sorteio-form {
+        grid-template-columns: 1fr 1fr;
       }
     }
 
@@ -748,6 +976,35 @@
       <img id="promoImage" src="" alt="Promoção do dia">
     </div>
     
+    <!-- NOVA SEÇÃO: Sorteio Bravetto -->
+    <div id="sorteioSection" class="sorteio-section" style="display: none;">
+      <div class="sorteio-logo">
+        <i class="fas fa-gift"></i>
+      </div>
+      <h2 class="sorteio-title">Sorteio Bravetto</h2>
+      <p class="sorteio-subtitle">Participe do nosso sorteio e concorra a prêmios incríveis!</p>
+      
+      <div id="sorteioForm" class="sorteio-form">
+        <div class="field">
+          <label>Seu nome completo</label>
+          <input type="text" id="sorteioNome" placeholder="Digite seu nome" required>
+        </div>
+        <div class="field">
+          <label>Seu WhatsApp</label>
+          <input type="tel" id="sorteioWhatsApp" placeholder="(XX) XXXXX-XXXX" required>
+        </div>
+        <button id="participarSorteio" class="sorteio-btn">Participar do Sorteio</button>
+      </div>
+      
+      <div id="sorteioSuccess" class="sorteio-success">
+        <p><i class="fas fa-check-circle"></i> <b>Inscrição confirmada!</b> Boa sorte no sorteio.</p>
+      </div>
+      
+      <div class="sorteio-participants">
+        <i class="fas fa-users"></i> <strong id="participantesCount">0</strong> pessoas já participaram
+      </div>
+    </div>
+    
     <div style="margin:10px 0 8px" class="muted">Toque em um item para ver detalhes e adicionar ao pedido</div>
     <div id="grid" class="grid"></div>
   </main>
@@ -804,6 +1061,35 @@
             <i class="fab fa-instagram"></i> Avaliar no Instagram
           </a>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOVO MODAL: Sorteio - Roleta -->
+  <div id="sorteioModal" class="sorteio-modal">
+    <div class="sorteio-modal-content">
+      <h2 class="sorteio-modal-title">Sortear Vencedor</h2>
+      <p>Clique no botão abaixo para sortear um vencedor entre os participantes.</p>
+      
+      <div class="roleta-container">
+        <div class="roleta-ponteiro"></div>
+        <div id="roleta" class="roleta">
+          <div class="roleta-vencedor">?</div>
+        </div>
+      </div>
+      
+      <button id="sortearBtn" class="sorteio-btn" style="margin-top: 20px;">
+        <i class="fas fa-random"></i> Sortear Vencedor
+      </button>
+      
+      <div id="sorteioResultado" class="sorteio-resultado">
+        <h3><i class="fas fa-trophy"></i> Parabéns ao vencedor!</h3>
+        <p><strong>Nome:</strong> <span id="vencedorNome"></span></p>
+        <p><strong>WhatsApp:</strong> <span id="vencedorWhatsApp"></span></p>
+        <a id="vencedorWhatsAppLink" class="whatsapp-btn" target="_blank">
+          <i class="fab fa-whatsapp"></i> Entrar em contato
+        </a>
+        <button class="btn" onclick="fecharSorteio()" style="margin-top: 10px; width: 100%;">Fechar</button>
       </div>
     </div>
   </div>
@@ -915,6 +1201,46 @@
         </div>
       </div>
 
+      <!-- NOVA SEÇÃO: Sorteio -->
+      <div class="admin-section">
+        <h3>Configurações do Sorteio</h3>
+        <div class="grid-2">
+          <div class="field">
+            <label>Status do Sorteio</label>
+            <select id="st_sorteio_active" onchange="toggleSorteioSection()">
+              <option value="false">Desativado</option>
+              <option value="true">Ativado</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Título do Sorteio</label>
+            <input id="st_sorteio_titulo" type="text" placeholder="Ex: Sorteio Pizza Grátis">
+          </div>
+          <div class="field">
+            <label>Descrição do Sorteio</label>
+            <textarea id="st_sorteio_desc" placeholder="Descreva o prêmio e as regras"></textarea>
+          </div>
+          <div class="field">
+            <label>Data do Sorteio</label>
+            <input id="st_sorteio_data" type="date">
+          </div>
+        </div>
+        <div class="admin-actions">
+          <button class="btn" onclick="abrirSorteioModal()">
+            <i class="fas fa-random"></i> Realizar Sorteio
+          </button>
+          <button class="btn" onclick="exportarParticipantes()">
+            <i class="fas fa-download"></i> Exportar Participantes
+          </button>
+          <button class="btn" style="border-color:rgba(255,92,92,.5)" onclick="limparParticipantes()">
+            <i class="fas fa-trash"></i> Limpar Participantes
+          </button>
+        </div>
+        <div class="sorteio-participants" style="margin-top: 16px;">
+          <i class="fas fa-users"></i> <strong id="adminParticipantesCount">0</strong> participantes inscritos
+        </div>
+      </div>
+
       <!-- Categorias -->
       <div class="admin-section">
         <h3>Categorias</h3>
@@ -978,6 +1304,13 @@
       description: '',
       image: '',
       active: false
+    },
+    sorteio: {
+      active: false,
+      titulo: 'Sorteio Bravetto',
+      descricao: 'Participe do nosso sorteio e concorra a prêmios incríveis!',
+      data: '',
+      participantes: []
     },
     categories: ['Pizzas', 'Hambúrgueres', 'Bebidas', 'Combos', 'Sobremesas']
   };
@@ -1047,6 +1380,7 @@
           renderGeneralMessage();
           renderPromoBanner();
           renderStoreClosedMessage();
+          renderSorteioSection();
         } else {
           // Se não houver dados no Firebase, usar dados locais
           loadState();
@@ -1077,11 +1411,13 @@
         renderGeneralMessage();
         renderPromoBanner();
         renderStoreClosedMessage();
+        renderSorteioSection();
         
         // Se estiver no painel admin, atualizar a lista de produtos também
         if (isAdmin) {
           renderProdutosAdmin();
           renderCategoriesAdmin();
+          renderSorteioAdmin();
         }
       }
     }, (error) => {
@@ -1190,6 +1526,37 @@
     localStorage.setItem(LS_PROMO_CLOSED, 'true');
   }
 
+  // NOVA FUNÇÃO: Mostrar/ocultar seção de sorteio
+  function renderSorteioSection() {
+    const sorteioEl = $('#sorteioSection');
+    const sorteioTitulo = $('.sorteio-title');
+    const sorteioSubtitulo = $('.sorteio-subtitle');
+    
+    if (state.settings.sorteio && state.settings.sorteio.active) {
+      sorteioEl.style.display = 'block';
+      
+      // Atualizar título e descrição
+      if (state.settings.sorteio.titulo) {
+        sorteioTitulo.textContent = state.settings.sorteio.titulo;
+      }
+      
+      if (state.settings.sorteio.descricao) {
+        sorteioSubtitulo.textContent = state.settings.sorteio.descricao;
+      }
+      
+      // Atualizar contador de participantes
+      $('#participantesCount').textContent = state.settings.sorteio.participantes ? state.settings.sorteio.participantes.length : 0;
+    } else {
+      sorteioEl.style.display = 'none';
+    }
+  }
+
+  // NOVA FUNÇÃO: Atualizar contador de participantes no admin
+  function renderSorteioAdmin() {
+    const count = state.settings.sorteio.participantes ? state.settings.sorteio.participantes.length : 0;
+    $('#adminParticipantesCount').textContent = count;
+  }
+
   // Renderização
   function renderChips(){
     const box = $('#chips'); 
@@ -1264,6 +1631,7 @@
     $('#cartCount').textContent = carrinho.reduce((total, item) => total + item.qty, 0);
     updateStatus();
     renderStoreClosedMessage();
+    renderSorteioSection();
   }
 
   function toggleDetails(element) {
@@ -1618,6 +1986,158 @@
     closeCart();
   }
 
+  // NOVAS FUNÇÕES: Sorteio
+  function participarSorteio() {
+    const nome = $('#sorteioNome').value.trim();
+    const whatsapp = $('#sorteioWhatsApp').value.trim();
+    
+    if (!nome || !whatsapp) {
+      alert('Por favor, preencha seu nome e WhatsApp para participar do sorteio.');
+      return;
+    }
+    
+    // Verificar se já existe um participante com este WhatsApp
+    const whatsappExistente = state.settings.sorteio.participantes?.find(p => 
+      p.whatsapp.replace(/\D/g, '') === whatsapp.replace(/\D/g, '')
+    );
+    
+    if (whatsappExistente) {
+      alert('Você já está participando do sorteio! Boa sorte!');
+      return;
+    }
+    
+    // Adicionar participante
+    if (!state.settings.sorteio.participantes) {
+      state.settings.sorteio.participantes = [];
+    }
+    
+    state.settings.sorteio.participantes.push({
+      id: uid(),
+      nome: nome,
+      whatsapp: whatsapp,
+      data: new Date().toISOString()
+    });
+    
+    persist();
+    
+    // Mostrar mensagem de sucesso
+    $('#sorteioSuccess').style.display = 'block';
+    $('#sorteioForm').style.display = 'none';
+    
+    // Atualizar contador
+    $('#participantesCount').textContent = state.settings.sorteio.participantes.length;
+    
+    // Limpar formulário
+    $('#sorteioNome').value = '';
+    $('#sorteioWhatsApp').value = '';
+  }
+
+  function abrirSorteioModal() {
+    if (!state.settings.sorteio.participantes || state.settings.sorteio.participantes.length === 0) {
+      alert('Não há participantes para sortear.');
+      return;
+    }
+    
+    $('#sorteioModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    
+    // Resetar resultado
+    $('#sorteioResultado').style.display = 'none';
+    $('#roleta').style.transform = 'rotate(0deg)';
+  }
+
+  function fecharSorteio() {
+    $('#sorteioModal').classList.remove('open');
+    document.body.style.overflow = 'auto';
+  }
+
+  function sortearVencedor() {
+    const participantes = state.settings.sorteio.participantes;
+    if (!participantes || participantes.length === 0) return;
+    
+    // Desabilitar botão durante o sorteio
+    $('#sortearBtn').disabled = true;
+    
+    // Efeito de rotação da roleta
+    const roleta = $('#roleta');
+    const rotacoes = 5; // Número de rotações completas
+    const anguloPorParticipante = 360 / participantes.length;
+    const indiceSorteado = Math.floor(Math.random() * participantes.length);
+    const anguloFinal = (rotacoes * 360) + (indiceSorteado * anguloPorParticipante);
+    
+    roleta.style.transform = `rotate(${anguloFinal}deg)`;
+    
+    // Aguardar a animação terminar e mostrar o resultado
+    setTimeout(() => {
+      const vencedor = participantes[indiceSorteado];
+      
+      // Mostrar resultado
+      $('#vencedorNome').textContent = vencedor.nome;
+      $('#vencedorWhatsApp').textContent = vencedor.whatsapp;
+      
+      // Criar link do WhatsApp
+      const numeroWhatsApp = vencedor.whatsapp.replace(/\D/g, '');
+      $('#vencedorWhatsAppLink').href = `https://wa.me/${numeroWhatsApp}`;
+      
+      $('#sorteioResultado').style.display = 'block';
+      $('#sortearBtn').disabled = false;
+    }, 4000); // Tempo da animação da roleta
+  }
+
+  function exportarParticipantes() {
+    if (!state.settings.sorteio.participantes || state.settings.sorteio.participantes.length === 0) {
+      alert('Não há participantes para exportar.');
+      return;
+    }
+    
+    const dados = state.settings.sorteio.participantes.map(p => ({
+      Nome: p.nome,
+      WhatsApp: p.whatsapp,
+      Data: new Date(p.data).toLocaleString('pt-BR')
+    }));
+    
+    const csv = convertToCSV(dados);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `participantes-sorteio-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function convertToCSV(objArray) {
+    const array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
+    let str = 'Nome,WhatsApp,Data de Inscrição\r\n';
+    
+    for (let i = 0; i < array.length; i++) {
+      let line = '';
+      for (let index in array[i]) {
+        if (line !== '') line += ',';
+        line += array[i][index];
+      }
+      str += line + '\r\n';
+    }
+    
+    return str;
+  }
+
+  function limparParticipantes() {
+    if (confirm('Tem certeza que deseja limpar todos os participantes? Esta ação não pode ser desfeita.')) {
+      state.settings.sorteio.participantes = [];
+      persist();
+      renderSorteioAdmin();
+      alert('Participantes removidos com sucesso.');
+    }
+  }
+
+  function toggleSorteioSection() {
+    const active = $('#st_sorteio_active').value === 'true';
+    state.settings.sorteio.active = active;
+    persist();
+    renderSorteioSection();
+  }
+
   // Admin
   $('#adminBtn').addEventListener('click', () => {
     $('#adminPass').value = '';
@@ -1658,8 +2178,15 @@
     $('#st_promo_img').value = state.settings.promo?.image || '';
     $('#st_promo_active').value = state.settings.promo?.active ? 'true' : 'false';
     
+    // Preencher sorteio
+    $('#st_sorteio_active').value = state.settings.sorteio?.active ? 'true' : 'false';
+    $('#st_sorteio_titulo').value = state.settings.sorteio?.titulo || '';
+    $('#st_sorteio_desc').value = state.settings.sorteio?.descricao || '';
+    $('#st_sorteio_data').value = state.settings.sorteio?.data || '';
+    
     renderProdutosAdmin();
     renderCategoriesAdmin();
+    renderSorteioAdmin();
     
     $('#adminBack').style.display = 'flex';
     document.body.style.overflow = 'hidden';
@@ -1689,6 +2216,12 @@
       active: $('#st_promo_active').value === 'true'
     };
     
+    // Salvar sorteio
+    state.settings.sorteio.titulo = $('#st_sorteio_titulo').value.trim();
+    state.settings.sorteio.descricao = $('#st_sorteio_desc').value.trim();
+    state.settings.sorteio.data = $('#st_sorteio_data').value;
+    // O status do sorteio é salvo automaticamente quando alterado
+    
     // Salvar categorias
     const categoryInputs = $$('#categoriesList input');
     state.settings.categories = Array.from(categoryInputs)
@@ -1702,6 +2235,7 @@
     renderGeneralMessage();
     renderPromoBanner();
     renderStoreClosedMessage();
+    renderSorteioSection();
     alert('Configurações salvas com sucesso! As alterações serão sincronizadas com todos os dispositivos.');
   }
 
@@ -1854,6 +2388,7 @@
           renderGeneralMessage();
           renderPromoBanner();
           renderStoreClosedMessage();
+          renderSorteioSection();
           closeAdmin();
           alert('Backup importado com sucesso!');
         }else{
@@ -1876,6 +2411,7 @@
       renderGeneralMessage();
       renderPromoBanner();
       renderStoreClosedMessage();
+      renderSorteioSection();
       closeAdmin();
       alert('Sistema resetado para os valores padrão');
     }
@@ -1902,6 +2438,16 @@
       if(e.target === this) closeProductModal();
     });
     
+    $('#sorteioModal').addEventListener('click', function(e){
+      if(e.target === this) fecharSorteio();
+    });
+    
+    // Event listener para participar do sorteio
+    $('#participarSorteio').addEventListener('click', participarSorteio);
+    
+    // Event listener para sortear vencedor
+    $('#sortearBtn').addEventListener('click', sortearVencedor);
+    
     // Fechar modais com ESC
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') {
@@ -1909,6 +2455,7 @@
         if ($('#adminBack').style.display === 'flex') closeAdmin();
         if ($('#sheet').classList.contains('open')) closeCart();
         if ($('#productModal').classList.contains('open')) closeProductModal();
+        if ($('#sorteioModal').classList.contains('open')) fecharSorteio();
       }
     });
   });
