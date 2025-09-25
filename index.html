@@ -11,6 +11,7 @@
   <link id="favicon" rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%23222222'/%3E%3Cpath d='M32 10c6 6-4 12-2 16 6 6 16-2 12-10 2 10-12 10-10 0 2-8-2-10-2-6z' fill='%23d4af37'/%3E%3Cpath d='M32 50c-12-6-20-18-18-36l8-3v7l-4 1c-1 13 7 22 14 26 7-4 15-13 14-26l-4-1v-7l8 3c2 18-6 30-18 36z' fill='%23f7d774'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    /* ESTILOS (mantidos iguais) */
     :root{
       --bg:#0b0b0c;
       --panel:#111114;
@@ -73,7 +74,6 @@
     }
     .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(46,204,113,.18);}
 
-    /* Instagram integration - MOVED TO TOP */
     .instagram-section {
       background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
       padding: 16px;
@@ -106,7 +106,6 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
 
-    /* Banner de promoção - MELHORADO */
     .promo-banner {
       background: linear-gradient(120deg, rgba(212,175,55,.15), rgba(247,215,116,.08));
       border: 1px solid rgba(212,175,55,.35);
@@ -131,8 +130,8 @@
       width: 100%;
       border-radius: 12px;
       margin-top: 12px;
-      max-height: none; /* REMOVIDO limite de altura */
-      object-fit: contain; /* ALTERADO de cover para contain */
+      max-height: none;
+      object-fit: contain;
     }
     .promo-banner .close-btn {
       position: absolute;
@@ -151,7 +150,6 @@
       font-size: 14px;
     }
 
-    /* Header simplificado - REMOVIDOS ícones não funcionais */
     .location-selector {
       display: flex;
       align-items: center;
@@ -237,10 +235,9 @@
       opacity: 1;
     }
     .info{padding:12px;}
-    /* MELHORIA: título agora quebra linha */
     .title{font-weight:800; font-size:14px; font-family:var(--brand-font); color:var(--gold-2); line-height:1.2; 
            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; 
-           min-height: 33.6px; /* altura aproximada para 2 linhas */}
+           min-height: 33.6px;}
     .card.disabled .title {
       color: var(--muted);
     }
@@ -283,7 +280,6 @@
       cursor: not-allowed;
     }
 
-    /* Botão do carrinho estilo iFood */
     .cart{position:fixed; right:16px; bottom:16px; z-index:40; display:flex; align-items:center; gap:8px;}
     .cart-btn {
       width: 60px;
@@ -332,7 +328,6 @@
       font-weight:900; padding:16px 0 8px; font-size: 17px;
     }
 
-    /* Modal de produto estilo iFood */
     .product-modal {
       position: fixed;
       top: 0;
@@ -437,7 +432,6 @@
       cursor: pointer;
     }
 
-    /* Seção de avaliações - REMOVIDA AS FALSAS E SIMPLIFICADA */
     .ratings-section {
       margin-top: 30px;
       text-align: center;
@@ -540,7 +534,6 @@
       display: inline-block;
     }
 
-    /* Mensagem geral */
     .general-message {
       background: rgba(212,175,55,.10);
       border: 1px solid rgba(212,175,55,.25);
@@ -551,7 +544,6 @@
       font-size: 14px;
     }
 
-    /* Aviso de loja fechada */
     .store-closed-message {
       background: rgba(255, 92, 92, 0.10);
       border: 1px solid rgba(255, 92, 92, 0.25);
@@ -563,7 +555,6 @@
       color: #ff7a7a;
     }
 
-    /* Mensagem de entrega grátis */
     .free-delivery-message {
       background: rgba(46, 204, 113, 0.10);
       border: 1px solid rgba(46, 204, 113, 0.25);
@@ -575,7 +566,6 @@
       color: var(--ok);
     }
 
-    /* Créditos do desenvolvedor */
     .developer-credits {
       text-align: center;
       padding: 20px 0;
@@ -599,7 +589,6 @@
       text-shadow: 0 0 10px rgba(212,175,55,0.3);
     }
 
-    /* Admin improvements */
     .admin-section {
       margin-bottom: 24px;
       padding: 16px;
@@ -619,7 +608,7 @@
       margin-top: 16px;
     }
 
-    /* NOVA SEÇÃO: Sorteio Bravetto */
+    /* NOVOS ESTILOS PARA SORTEIO */
     .sorteio-section {
       background: linear-gradient(135deg, rgba(212,175,55,.15), rgba(247,215,116,.08));
       border: 1px solid rgba(212,175,55,.35);
@@ -720,7 +709,6 @@
       color: var(--gold-2);
     }
 
-    /* Modal de sorteio - Roleta */
     .sorteio-modal {
       position: fixed;
       top: 0;
@@ -946,7 +934,7 @@
 
   <!-- MAIN -->
   <main>
-    <!-- Seção Instagram - MOVED TO TOP -->
+    <!-- Seção Instagram -->
     <div class="instagram-section">
       <h3 class="instagram-title">Siga-nos no Instagram</h3>
       <p>Poste sua experiência marcando @_bravetto_ e apareça em nossa página!</p>
@@ -1272,13 +1260,19 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <script>
+  // CORREÇÕES APLICADAS:
+  // 1. Corrigido problema de entrada no admin
+  // 2. Corrigida inicialização do Firebase
+  // 3. Adicionadas funções faltantes
+  // 4. Corrigidos problemas de sintaxe
+
   // Configurações iniciais
   const ADMIN_PASSWORD = '1a2b3c4D@7';
   const LS_KEY = 'bravetto_menu_v1';
   const LS_ADDRESS_KEY = 'bravetto_address';
   const LS_PROMO_CLOSED = 'bravetto_promo_closed';
 
-  // Configuração do Firebase
+  // Configuração do Firebase corrigida
   const firebaseConfig = {
     apiKey: "AIzaSyCimABHZZvGT-W4b_ouEieF0XiizLo6DVw",
     authDomain: "cardapiobravetto.firebaseapp.com",
@@ -1345,10 +1339,15 @@
   function money(v) { return (Number(v)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
   function uid() { return 'id' + Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-3); }
 
-  // Inicialização do Firebase
+  // Inicialização do Firebase CORRIGIDA
   function initializeFirebase() {
     try {
-      firebaseApp = firebase.initializeApp(firebaseConfig);
+      // Verificar se o Firebase já foi inicializado
+      if (!firebase.apps.length) {
+        firebaseApp = firebase.initializeApp(firebaseConfig);
+      } else {
+        firebaseApp = firebase.app();
+      }
       database = firebase.database();
       console.log("Firebase inicializado com sucesso");
       
@@ -1359,13 +1358,23 @@
       console.error("Erro ao inicializar Firebase:", error);
       // Continuar com funcionalidade local mesmo sem Firebase
       loadState();
+      render();
+      renderChips();
+      renderSorteioSection();
       return false;
     }
   }
 
   // Carregar dados do Firebase
   function loadFromFirebase() {
-    if (!database) return;
+    if (!database) {
+      console.log("Firebase não disponível, usando dados locais");
+      loadState();
+      render();
+      renderChips();
+      renderSorteioSection();
+      return;
+    }
     
     database.ref('menuData').once('value')
       .then((snapshot) => {
@@ -1383,7 +1392,11 @@
           renderSorteioSection();
         } else {
           // Se não houver dados no Firebase, usar dados locais
+          console.log("Nenhum dado no Firebase, usando dados locais");
           loadState();
+          render();
+          renderChips();
+          renderSorteioSection();
         }
         
         // Configurar listener para atualizações em tempo real
@@ -1392,6 +1405,9 @@
       .catch((error) => {
         console.error("Erro ao carregar do Firebase:", error);
         loadState();
+        render();
+        renderChips();
+        renderSorteioSection();
       });
   }
 
@@ -1427,7 +1443,11 @@
 
   // Salvar dados no Firebase
   function saveToFirebase() {
-    if (!database) return;
+    if (!database) {
+      console.log("Firebase não disponível, salvando apenas localmente");
+      localStorage.setItem(LS_KEY, JSON.stringify(state));
+      return;
+    }
     
     try {
       database.ref('menuData').set(state)
@@ -1444,13 +1464,24 @@
       if(saved) {
         const parsed = JSON.parse(saved);
         // Garantir que temos as novas propriedades
-        return {
+        state = {
           settings: { ...DEFAULT_SETTINGS, ...parsed.settings },
           products: parsed.products || [...DEFAULT_PRODUCTS]
         };
+        
+        // Garantir que a estrutura do sorteio existe
+        if (!state.settings.sorteio) {
+          state.settings.sorteio = {...DEFAULT_SETTINGS.sorteio};
+        }
+        
+        return state;
       }
-    }catch(e){}
-    return { settings: {...DEFAULT_SETTINGS}, products:[...DEFAULT_PRODUCTS] };
+    }catch(e){
+      console.error("Erro ao carregar estado:", e);
+    }
+    
+    state = { settings: {...DEFAULT_SETTINGS}, products:[...DEFAULT_PRODUCTS] };
+    return state;
   }
 
   function loadAddress(){
@@ -1532,7 +1563,12 @@
     const sorteioTitulo = $('.sorteio-title');
     const sorteioSubtitulo = $('.sorteio-subtitle');
     
-    if (state.settings.sorteio && state.settings.sorteio.active) {
+    // Garantir que a estrutura do sorteio existe
+    if (!state.settings.sorteio) {
+      state.settings.sorteio = {...DEFAULT_SETTINGS.sorteio};
+    }
+    
+    if (state.settings.sorteio.active) {
       sorteioEl.style.display = 'block';
       
       // Atualizar título e descrição
@@ -1545,7 +1581,12 @@
       }
       
       // Atualizar contador de participantes
-      $('#participantesCount').textContent = state.settings.sorteio.participantes ? state.settings.sorteio.participantes.length : 0;
+      const count = state.settings.sorteio.participantes ? state.settings.sorteio.participantes.length : 0;
+      $('#participantesCount').textContent = count;
+      
+      // Resetar formulário se estiver visível
+      $('#sorteioSuccess').style.display = 'none';
+      $('#sorteioForm').style.display = 'grid';
     } else {
       sorteioEl.style.display = 'none';
     }
@@ -1631,7 +1672,6 @@
     $('#cartCount').textContent = carrinho.reduce((total, item) => total + item.qty, 0);
     updateStatus();
     renderStoreClosedMessage();
-    renderSorteioSection();
   }
 
   function toggleDetails(element) {
@@ -1996,8 +2036,17 @@
       return;
     }
     
+    // Garantir que a estrutura do sorteio existe
+    if (!state.settings.sorteio) {
+      state.settings.sorteio = {...DEFAULT_SETTINGS.sorteio};
+    }
+    
+    if (!state.settings.sorteio.participantes) {
+      state.settings.sorteio.participantes = [];
+    }
+    
     // Verificar se já existe um participante com este WhatsApp
-    const whatsappExistente = state.settings.sorteio.participantes?.find(p => 
+    const whatsappExistente = state.settings.sorteio.participantes.find(p => 
       p.whatsapp.replace(/\D/g, '') === whatsapp.replace(/\D/g, '')
     );
     
@@ -2007,10 +2056,6 @@
     }
     
     // Adicionar participante
-    if (!state.settings.sorteio.participantes) {
-      state.settings.sorteio.participantes = [];
-    }
-    
     state.settings.sorteio.participantes.push({
       id: uid(),
       nome: nome,
@@ -2127,6 +2172,7 @@
       state.settings.sorteio.participantes = [];
       persist();
       renderSorteioAdmin();
+      renderSorteioSection();
       alert('Participantes removidos com sucesso.');
     }
   }
@@ -2138,8 +2184,8 @@
     renderSorteioSection();
   }
 
-  // Admin
-  $('#adminBtn').addEventListener('click', () => {
+  // Admin - CORREÇÃO PRINCIPAL: Problema de entrada no admin
+  document.getElementById('adminBtn').addEventListener('click', function() {
     $('#adminPass').value = '';
     $('#loginError').style.display = 'none';
     $('#loginBack').style.display = 'flex';
@@ -2152,7 +2198,8 @@
   }
 
   function checkLogin(){
-    if($('#adminPass').value === ADMIN_PASSWORD){
+    const senha = $('#adminPass').value;
+    if(senha === ADMIN_PASSWORD){
       isAdmin = true;
       hideLogin();
       openAdmin();
@@ -2252,10 +2299,17 @@
       field.className = 'field';
       field.innerHTML = `
         <label>Categoria ${index + 1}</label>
-        <input value="${cat}" placeholder="Nome da categoria">
+        <input value="${cat}" placeholder="Nome da categoria" onchange="updateCategory(${index}, this.value)">
       `;
       container.appendChild(field);
     });
+  }
+
+  function updateCategory(index, value) {
+    state.settings.categories[index] = value.trim();
+    // Remover categorias vazias
+    state.settings.categories = state.settings.categories.filter(cat => cat !== '');
+    persist();
   }
 
   function addCategoryField() {
@@ -2264,9 +2318,17 @@
     field.className = 'field';
     field.innerHTML = `
       <label>Nova Categoria</label>
-      <input placeholder="Nome da categoria">
+      <input placeholder="Nome da categoria" onchange="addNewCategory(this.value)">
     `;
     container.appendChild(field);
+  }
+
+  function addNewCategory(value) {
+    if (value.trim() !== '') {
+      state.settings.categories.push(value.trim());
+      persist();
+      renderCategoriesAdmin();
+    }
   }
 
   function renderProdutosAdmin(){
@@ -2363,15 +2425,15 @@
   function exportBackup(){
     const data = JSON.stringify(state, null, 2);
     const blob = new Blob([data], {type: 'application/json'});
-    const url = URL.revokeObjectURL(blob);
+    const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = 'backup-bravetto.json';
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 100);
   }
 
-  $('#importFile').addEventListener('change', function(e){
+  document.getElementById('importFile').addEventListener('change', function(e){
     const file = e.target.files[0];
     if(!file) return;
     
@@ -2399,6 +2461,7 @@
       }
     };
     reader.readAsText(file);
+    this.value = ''; // Resetar o input
   });
 
   function resetAll(){
@@ -2443,10 +2506,10 @@
     });
     
     // Event listener para participar do sorteio
-    $('#participarSorteio').addEventListener('click', participarSorteio);
+    document.getElementById('participarSorteio').addEventListener('click', participarSorteio);
     
     // Event listener para sortear vencedor
-    $('#sortearBtn').addEventListener('click', sortearVencedor);
+    document.getElementById('sortearBtn').addEventListener('click', sortearVencedor);
     
     // Fechar modais com ESC
     document.addEventListener('keydown', function(e) {
@@ -2458,6 +2521,11 @@
         if ($('#sorteioModal').classList.contains('open')) fecharSorteio();
       }
     });
+    
+    // Inicializar renderização
+    render();
+    renderChips();
+    renderSorteioSection();
   });
   </script>
 </body>
