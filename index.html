@@ -275,6 +275,7 @@
       flex: 1;
       display: flex;
       flex-direction: column;
+      min-height: 120px; /* Garante espaço mínimo para o botão */
     }
     .title{
       font-weight:800; 
@@ -301,6 +302,7 @@
       -webkit-box-orient: vertical; 
       overflow: hidden;
       flex: 1;
+      margin-bottom: 8px;
     }
     .full-desc {
       display: none;
@@ -321,12 +323,14 @@
       align-items:center; 
       justify-content:space-between; 
       gap:8px; 
-      margin-top:10px;
+      margin-top:auto; /* Empurra o botão para baixo */
+      padding-top: 8px;
     }
     .price{
       font-weight:900; 
       color:var(--gold-2); 
       font-size:15px;
+      flex-shrink: 0;
     }
     .card.disabled .price {
       color: var(--muted);
@@ -343,8 +347,11 @@
       font-weight: 600;
       transition: all 0.3s ease;
       white-space: nowrap;
-      z-index: 5;
-      position: relative;
+      flex-shrink: 0;
+      min-width: 60px; /* Largura mínima garantida */
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .btn:active{transform:translateY(1px);}
     .btn-primary{
@@ -908,15 +915,20 @@
       box-shadow: 0 4px 12px rgba(37,211,102,0.3);
     }
 
-    /* MELHORIAS RESPONSIVAS */
+    /* MELHORIAS RESPONSIVAS - CORREÇÃO DO BOTÃO NO MOBILE */
     @media (max-width: 360px) {
       .brand h1 { font-size: 18px; }
       .brand small { font-size: 10px; }
       .admin-btn { padding: 7px 10px; font-size: 12px; }
       .status-pill { font-size: 11px; padding: 5px 8px; }
       .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-      .card .btn { padding: 6px 10px; font-size: 12px; }
+      .card .btn { 
+        padding: 6px 10px; 
+        font-size: 12px; 
+        min-width: 50px;
+      }
       .title { min-height: 30px; font-size: 13px; }
+      .info { padding: 10px; min-height: 110px; }
       .roleta-container { width: 250px; height: 250px; }
       .roleta-vencedor { width: 80px; height: 80px; font-size: 16px; }
     }
@@ -925,6 +937,13 @@
       .topbar { flex-wrap: wrap; }
       .status-pill { order: 3; width: 100%; justify-content: center; margin-top: 8px; margin-left: 0; }
       .sorteio-modal-content { padding: 20px; }
+      .grid { grid-template-columns: repeat(2, 1fr); }
+      .card .btn { 
+        padding: 7px 10px; 
+        font-size: 12px; 
+        min-width: 55px;
+      }
+      .info { min-height: 115px; }
     }
 
     @media (min-width: 768px) {
@@ -1341,9 +1360,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <script>
-  // CORREÇÃO DOS PROBLEMAS:
-  // 1. Botão "Adicionar" não aparecendo no mobile
-  // 2. Clique indo direto para a imagem ao invés de abrir o modal
+  // CORREÇÃO COMPLETA - BOTÃO "ADD" VISÍVEL NO CELULAR
 
   // Configurações iniciais
   const ADMIN_PASSWORD = '1a2b3c4D@7';
@@ -1731,7 +1748,7 @@
     });
   }
 
-  // RENDER PRINCIPAL CORRIGIDO - BOTÕES VISÍVEIS E FUNCIONAIS
+  // RENDER PRINCIPAL CORRIGIDO - BOTÕES VISÍVEIS NO CELULAR
   function render(){
     const q = ($('#q').value || '').toLowerCase();
     const grid = $('#grid'); 
