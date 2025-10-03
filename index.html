@@ -343,6 +343,8 @@
       font-weight: 600;
       transition: all 0.3s ease;
       white-space: nowrap;
+      z-index: 5;
+      position: relative;
     }
     .btn:active{transform:translateY(1px);}
     .btn-primary{
@@ -1339,7 +1341,9 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <script>
-  // CORREÇÃO DO PROBLEMA DE IMAGENS - SISTEMA SIMPLIFICADO E FUNCIONAL
+  // CORREÇÃO DOS PROBLEMAS:
+  // 1. Botão "Adicionar" não aparecendo no mobile
+  // 2. Clique indo direto para a imagem ao invés de abrir o modal
 
   // Configurações iniciais
   const ADMIN_PASSWORD = '1a2b3c4D@7';
@@ -1359,7 +1363,7 @@
     measurementId: "G-PNTPM6DESN"
   };
 
-  // IMAGENS DE FALLBACK - URLs confiáveis e funcionais
+  // IMAGENS DE FALLBACK - URLs confiáveis
   const FALLBACK_IMAGES = {
     'pizza': 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=500&auto=format&fit=crop',
     'hamburguer': 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=500&auto=format&fit=crop',
@@ -1423,7 +1427,7 @@
   function money(v) { return (Number(v)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
   function uid() { return 'id' + Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-3); }
 
-  // SISTEMA DE CARREGAMENTO DE IMAGENS CORRIGIDO E SIMPLIFICADO
+  // SISTEMA DE CARREGAMENTO DE IMAGENS CORRIGIDO
   function loadProductImage(thumbDiv, produto) {
     // Primeiro mostrar placeholder
     thumbDiv.innerHTML = `
@@ -1727,7 +1731,7 @@
     });
   }
 
-  // RENDER PRINCIPAL CORRIGIDO - IMAGENS FUNCIONANDO
+  // RENDER PRINCIPAL CORRIGIDO - BOTÕES VISÍVEIS E FUNCIONAIS
   function render(){
     const q = ($('#q').value || '').toLowerCase();
     const grid = $('#grid'); 
@@ -1762,7 +1766,9 @@
           ${prod.desc && prod.desc.length > 60 ? '<div class="show-details" onclick="toggleDetails(this)">Ver ingredientes</div>' : ''}
           <div class="row">
             <div class="price">${money(prod.price)}</div>
-            <button class="btn" data-id="${prod.id}" ${(prod.available && state.settings.open === 'open') ? '' : 'disabled'}>Add</button>
+            <button class="btn" data-id="${prod.id}" ${(prod.available && state.settings.open === 'open') ? '' : 'disabled'}>
+              ${(prod.available && state.settings.open === 'open') ? 'Add' : 'Indisponível'}
+            </button>
           </div>
         </div>`;
       
@@ -1770,16 +1776,24 @@
       const thumbDiv = card.querySelector('.thumb');
       loadProductImage(thumbDiv, prod);
       
-      // Adicionar eventos
+      // CORREÇÃO: Eventos corrigidos - botão funciona separadamente
+      const button = card.querySelector('button');
+      if (prod.available && state.settings.open === 'open') {
+        button.onclick = (e) => {
+          e.stopPropagation(); // Impede que o clique no botão abra o modal
+          addToCart(prod);
+        };
+      }
+      
+      // CORREÇÃO: Clique no card abre modal, mas não no botão
       card.addEventListener('click', (e) => {
-        if (!e.target.classList.contains('btn') && !e.target.classList.contains('show-details')) {
+        // Só abre modal se não foi clique no botão ou no link de detalhes
+        if (!e.target.classList.contains('btn') && 
+            !e.target.classList.contains('show-details') &&
+            e.target.tagName !== 'BUTTON') {
           openProductModal(prod);
         }
       });
-      
-      if (prod.available && state.settings.open === 'open') {
-        card.querySelector('button').onclick = () => addToCart(prod);
-      }
       
       grid.appendChild(card);
     });
@@ -1882,6 +1896,7 @@
     }
     render();
     
+    // Feedback visual
     const button = document.querySelector(`[data-id="${produto.id}"]`);
     if (button) {
       button.classList.add('btn-primary');
@@ -1890,8 +1905,6 @@
       }, 300);
     }
   }
-
-  // ... (restante das funções mantidas iguais)
 
   function changeQty(id, delta){
     const item = carrinho.find(item => item.id === id);
