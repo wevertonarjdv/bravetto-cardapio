@@ -191,13 +191,24 @@
     }
 
     main{width:100%; max-width:100%; margin:16px auto 100px; padding:0 16px;}
-    .grid{display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap:12px;}
+    
+    /* MELHORIA: Grid otimizado para 3 produtos por linha em dispositivos móveis */
+    .grid{
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      width: 100%;
+    }
+    
     .card{
       background:linear-gradient(180deg,var(--panel-2),var(--panel)); 
       border:1px solid rgba(212,175,55,.22); border-radius:var(--radius); 
       overflow:hidden; box-shadow:var(--shadow); position:relative;
       transition: all 0.3s ease;
       cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
     }
     .card:hover {
       transform: translateY(-5px);
@@ -219,7 +230,15 @@
       font-weight: 700;
       z-index: 2;
     }
-    .thumb{aspect-ratio:1/1; background:#0d0d10 center/cover no-repeat; position: relative;}
+    .thumb{
+      aspect-ratio:1/1; 
+      background:#0d0d10 center/cover no-repeat; 
+      position: relative;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
     .thumb::after {
       content: '';
       position: absolute;
@@ -234,14 +253,38 @@
     .card.disabled .thumb::after {
       opacity: 1;
     }
-    .info{padding:12px;}
-    .title{font-weight:800; font-size:14px; font-family:var(--brand-font); color:var(--gold-2); line-height:1.2; 
-           display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; 
-           min-height: 33.6px;}
+    .info{
+      padding: 12px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .title{
+      font-weight:800; 
+      font-size:14px; 
+      font-family:var(--brand-font); 
+      color:var(--gold-2); 
+      line-height:1.2; 
+      display: -webkit-box; 
+      -webkit-line-clamp: 2; 
+      -webkit-box-orient: vertical; 
+      overflow: hidden; 
+      min-height: 33.6px;
+      margin-bottom: 4px;
+    }
     .card.disabled .title {
       color: var(--muted);
     }
-    .desc{font-size:12px; color:var(--muted); margin-top:4px; line-height:1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;}
+    .desc{
+      font-size:12px; 
+      color:var(--muted); 
+      line-height:1.3; 
+      display: -webkit-box; 
+      -webkit-line-clamp: 2; 
+      -webkit-box-orient: vertical; 
+      overflow: hidden;
+      flex: 1;
+    }
     .full-desc {
       display: none;
       font-size: 12px;
@@ -256,22 +299,39 @@
       cursor: pointer;
       display: inline-block;
     }
-    .row{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:10px;}
-    .price{font-weight:900; color:var(--gold-2); font-size:15px;}
+    .row{
+      display:flex; 
+      align-items:center; 
+      justify-content:space-between; 
+      gap:8px; 
+      margin-top:10px;
+    }
+    .price{
+      font-weight:900; 
+      color:var(--gold-2); 
+      font-size:15px;
+    }
     .card.disabled .price {
       color: var(--muted);
       text-decoration: line-through;
     }
     .btn{
-      padding:8px 12px; border-radius:10px; border:1px solid rgba(212,175,55,.35);
+      padding:8px 12px; 
+      border-radius:10px; 
+      border:1px solid rgba(212,175,55,.35);
       background:linear-gradient(180deg, rgba(212,175,55,.18), rgba(212,175,55,.06)); 
-      color:#fff; cursor:pointer; font-size:13px; font-weight: 600;
+      color:#fff; 
+      cursor:pointer; 
+      font-size:13px; 
+      font-weight: 600;
       transition: all 0.3s ease;
+      white-space: nowrap;
     }
     .btn:active{transform:translateY(1px);}
     .btn-primary{
       background:linear-gradient(180deg, rgba(212,175,55,.55), rgba(212,175,55,.28)); 
-      color:#1a1a1c; font-weight:900;
+      color:#1a1a1c; 
+      font-weight:900;
     }
     .btn:disabled {
       background: #1a1a1c;
@@ -829,12 +889,13 @@
       box-shadow: 0 4px 12px rgba(37,211,102,0.3);
     }
 
+    /* MELHORIAS RESPONSIVAS */
     @media (max-width: 360px) {
       .brand h1 { font-size: 18px; }
       .brand small { font-size: 10px; }
       .admin-btn { padding: 7px 10px; font-size: 12px; }
       .status-pill { font-size: 11px; padding: 5px 8px; }
-      .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+      .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
       .card .btn { padding: 6px 10px; font-size: 12px; }
       .title { min-height: 30px; font-size: 13px; }
       .roleta-container { width: 250px; height: 250px; }
@@ -849,7 +910,7 @@
 
     @media (min-width: 768px) {
       .wrap { max-width: 720px; }
-      .grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+      .grid { grid-template-columns: repeat(4, 1fr); gap: 16px; }
       .grid-2 { grid-template-columns: 1fr 1fr; }
       .address-fields { grid-template-columns: 1fr 1fr; }
       .address-fields .field:last-child { grid-column: 1 / span 2; }
@@ -874,11 +935,12 @@
 
     @media (min-width: 992px) {
       .wrap { max-width: 960px; }
-      .grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+      .grid { grid-template-columns: repeat(5, 1fr); }
     }
 
     @media (min-width: 1200px) {
       .wrap { max-width: 1140px; }
+      .grid { grid-template-columns: repeat(6, 1fr); }
     }
 
     @supports(padding: max(0px)) {
@@ -1265,6 +1327,7 @@
   // 2. Corrigida inicialização do Firebase
   // 3. Adicionadas funções faltantes
   // 4. Corrigidos problemas de sintaxe
+  // 5. CORREÇÃO PRINCIPAL: Sistema de fallback para imagens
 
   // Configurações iniciais
   const ADMIN_PASSWORD = '1a2b3c4D@7';
@@ -1282,6 +1345,15 @@
     messagingSenderId: "303652377735",
     appId: "1:303652377735:web:f0af28ded5d3b731881422",
     measurementId: "G-PNTPM6DESN"
+  };
+
+  // IMAGENS DE FALLBACK - URLs confiáveis
+  const FALLBACK_IMAGES = {
+    'pizza': 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=500&auto=format&fit=crop',
+    'hamburguer': 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=500&auto=format&fit=crop',
+    'bebida': 'https://images.unsplash.com/photo-1622484212603-c5aa0dbf9296?q=80&w=500&auto=format&fit=crop',
+    'combo': 'https://images.unsplash.com/photo-1561758033-d89a9ad46330?q=80&w=500&auto=format&fit=crop',
+    'default': 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=500&auto=format&fit=crop'
   };
 
   const DEFAULT_SETTINGS = {
@@ -1338,6 +1410,71 @@
   function $$(sel) { return document.querySelectorAll(sel); }
   function money(v) { return (Number(v)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
   function uid() { return 'id' + Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-3); }
+
+  // NOVA FUNÇÃO: Sistema de fallback para imagens
+  function getProductImage(produto) {
+    // Se a imagem do produto existe e não está vazia
+    if (produto.img && produto.img.trim() !== '') {
+      return produto.img;
+    }
+    
+    // Fallback baseado na categoria
+    const categoria = produto.cat.toLowerCase();
+    if (categoria.includes('pizza')) {
+      return FALLBACK_IMAGES.pizza;
+    } else if (categoria.includes('hambúrguer') || categoria.includes('burger')) {
+      return FALLBACK_IMAGES.hamburguer;
+    } else if (categoria.includes('bebida') || categoria.includes('refri') || categoria.includes('drink')) {
+      return FALLBACK_IMAGES.bebida;
+    } else if (categoria.includes('combo')) {
+      return FALLBACK_IMAGES.combo;
+    } else {
+      return FALLBACK_IMAGES.default;
+    }
+  }
+
+  // NOVA FUNÇÃO: Verificar se a imagem carrega corretamente
+  function checkImageLoad(imgUrl, callback) {
+    const img = new Image();
+    img.onload = function() {
+      callback(true, imgUrl);
+    };
+    img.onerror = function() {
+      callback(false, imgUrl);
+    };
+    img.src = imgUrl;
+  }
+
+  // NOVA FUNÇÃO: Carregar imagem com fallback
+  function loadImageWithFallback(element, produto) {
+    const originalUrl = getProductImage(produto);
+    
+    checkImageLoad(originalUrl, function(success, url) {
+      if (success) {
+        element.style.backgroundImage = `url('${url}')`;
+      } else {
+        // Se a imagem original falhar, usar fallback baseado na categoria
+        const fallbackUrl = getFallbackImage(produto.cat);
+        element.style.backgroundImage = `url('${fallbackUrl}')`;
+      }
+    });
+  }
+
+  // NOVA FUNÇÃO: Obter imagem de fallback baseada na categoria
+  function getFallbackImage(categoria) {
+    const cat = categoria.toLowerCase();
+    if (cat.includes('pizza')) {
+      return FALLBACK_IMAGES.pizza;
+    } else if (cat.includes('hambúrguer') || cat.includes('burger')) {
+      return FALLBACK_IMAGES.hamburguer;
+    } else if (cat.includes('bebida') || cat.includes('refri') || cat.includes('drink')) {
+      return FALLBACK_IMAGES.bebida;
+    } else if (cat.includes('combo')) {
+      return FALLBACK_IMAGES.combo;
+    } else {
+      return FALLBACK_IMAGES.default;
+    }
+  }
 
   // Inicialização do Firebase CORRIGIDA
   function initializeFirebase() {
@@ -1642,9 +1779,13 @@
     produtosFiltrados.forEach(prod => {
       const card = document.createElement('div');
       card.className = 'card' + (prod.available ? '' : ' disabled');
+      
+      // CORREÇÃO: Usar sistema de fallback para imagens
+      const thumbDiv = document.createElement('div');
+      thumbDiv.className = 'thumb';
+      
       card.innerHTML = `
         ${!prod.available ? '<div class="availability-badge">INDISPONÍVEL</div>' : ''}
-        <div class="thumb" style="background-image:url('${prod.img||''}')"></div>
         <div class="info">
           <div class="title">${prod.name}</div>
           <div class="desc">${prod.desc||''}</div>
@@ -1655,6 +1796,12 @@
             <button class="btn" data-id="${prod.id}" ${(prod.available && state.settings.open === 'open') ? '' : 'disabled'}>Add</button>
           </div>
         </div>`;
+      
+      // Adicionar a thumb primeiro
+      card.insertBefore(thumbDiv, card.firstChild);
+      
+      // Carregar imagem com fallback
+      loadImageWithFallback(thumbDiv, prod);
       
       // Adicionar evento de clique para abrir modal
       card.addEventListener('click', (e) => {
@@ -1701,7 +1848,18 @@
     currentProduct = produto;
     modalQty = 1;
     
-    $('#modalProductImage').src = produto.img || '';
+    // CORREÇÃO: Usar sistema de fallback para imagem do modal
+    const modalImage = $('#modalProductImage');
+    const originalUrl = getProductImage(produto);
+    
+    checkImageLoad(originalUrl, function(success, url) {
+      if (success) {
+        modalImage.src = url;
+      } else {
+        modalImage.src = getFallbackImage(produto.cat);
+      }
+    });
+    
     $('#modalProductName').textContent = produto.name;
     $('#modalProductDesc').textContent = produto.desc || '';
     $('#modalProductPrice').textContent = money(produto.price);
