@@ -1360,7 +1360,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <script>
-  // CORREÇÃO COMPLETA - BOTÃO "ADD" VISÍVEL NO CELULAR
+  // CORREÇÃO COMPLETA - PROBLEMAS DE IMAGEM RESOLVIDOS
 
   // Configurações iniciais
   const ADMIN_PASSWORD = '1a2b3c4D@7';
@@ -1444,33 +1444,49 @@
   function money(v) { return (Number(v)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
   function uid() { return 'id' + Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-3); }
 
-  // SISTEMA DE CARREGAMENTO DE IMAGENS CORRIGIDO
+  // SISTEMA DE CARREGAMENTO DE IMAGENS CORRIGIDO - VERSÃO MELHORADA
   function loadProductImage(thumbDiv, produto) {
-    // Primeiro mostrar placeholder
-    thumbDiv.innerHTML = `
-      <div class="placeholder">
-        <i class="fas fa-${getCategoryIcon(produto.cat)}"></i>
-        <div>Carregando...</div>
-      </div>
-    `;
+    // Primeiro definir o fallback como background
+    const fallbackImg = getFallbackImage(produto.cat);
+    thumbDiv.style.backgroundImage = `url('${fallbackImg}')`;
     
-    // Tentar carregar a imagem original
+    // Se não há imagem definida, usar apenas o fallback
+    if (!produto.img || produto.img.trim() === '') {
+      return;
+    }
+    
+    // Tentar carregar a imagem original em segundo plano
     const img = new Image();
     
     img.onload = function() {
       // Sucesso - usar imagem original
       thumbDiv.style.backgroundImage = `url('${produto.img}')`;
-      thumbDiv.innerHTML = ''; // Remove o placeholder
     };
     
     img.onerror = function() {
-      // Falha - usar fallback
-      thumbDiv.style.backgroundImage = `url('${getFallbackImage(produto.cat)}')`;
-      thumbDiv.innerHTML = ''; // Remove o placeholder
+      // Falha - manter o fallback que já está definido
+      console.warn(`Imagem não carregada: ${produto.img}`);
     };
     
     // Iniciar o carregamento
     img.src = produto.img;
+  }
+
+  // FUNÇÃO MELHORADA PARA VALIDAR URL DE IMAGEM
+  function isValidImageUrl(url) {
+    if (!url || url.trim() === '') return false;
+    
+    // Verificar se é uma URL válida
+    try {
+      new URL(url);
+    } catch (e) {
+      return false;
+    }
+    
+    // Verificar extensões de imagem comuns
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
+    const lowerUrl = url.toLowerCase();
+    return imageExtensions.some(ext => lowerUrl.includes(ext));
   }
 
   function getCategoryIcon(categoria) {
@@ -1680,6 +1696,11 @@
       if (state.settings.promo.image) {
         $('#promoImage').src = state.settings.promo.image;
         $('#promoImage').style.display = 'block';
+        
+        // Adicionar fallback para imagem de promoção
+        $('#promoImage').onerror = function() {
+          this.style.display = 'none';
+        };
       } else {
         $('#promoImage').style.display = 'none';
       }
@@ -1748,7 +1769,7 @@
     });
   }
 
-  // RENDER PRINCIPAL CORRIGIDO - BOTÕES VISÍVEIS NO CELULAR
+  // RENDER PRINCIPAL CORRIGIDO - PROBLEMAS DE IMAGEM RESOLVIDOS
   function render(){
     const q = ($('#q').value || '').toLowerCase();
     const grid = $('#grid'); 
@@ -1789,7 +1810,7 @@
           </div>
         </div>`;
       
-      // Agora carregar a imagem na thumb
+      // Agora carregar a imagem na thumb - VERSÃO CORRIGIDA
       const thumbDiv = card.querySelector('.thumb');
       loadProductImage(thumbDiv, prod);
       
@@ -1847,10 +1868,18 @@
     modalQty = 1;
     
     const modalImage = $('#modalProductImage');
-    modalImage.src = produto.img;
-    modalImage.onerror = function() {
-      this.src = getFallbackImage(produto.cat);
-    };
+    
+    // CORREÇÃO: Definir fallback primeiro, depois tentar carregar imagem original
+    modalImage.src = getFallbackImage(produto.cat);
+    
+    // Tentar carregar a imagem original se existir
+    if (produto.img && produto.img.trim() !== '') {
+      const img = new Image();
+      img.onload = function() {
+        modalImage.src = produto.img;
+      };
+      img.src = produto.img;
+    }
     
     $('#modalProductName').textContent = produto.name;
     $('#modalProductDesc').textContent = produto.desc || '';
